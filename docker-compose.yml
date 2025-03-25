@@ -2,8 +2,6 @@ services:
   db:
     image: postgres:15
     container_name: postgres_db
-    # Mude para a sua plataforma
-    platform: linux/arm64
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -24,11 +22,10 @@ services:
     build: .
     container_name: revforce-api
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/revforce
-    # Mude para a sua plataforma
-    platform: linux/arm64
     ports:
       - "8000:8000"
     networks:

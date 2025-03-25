@@ -22,11 +22,52 @@ https://www.docker.com
 
 ## ✅ Configurando o ambiente
 
+Para executar a aplicação temos duas opções, configurar o ambiente python e o banco de dados manualmente (que pode ser feito com docker ou não), ou utilizar o `docker compose`.
+
+Antes de tudo, clone o repositório e execute todos os comandos no diretório do projeto:
+
 ```bash
 # Clone o repositório
 git clone https://tools.ages.pucrs.br/plataforma-de-marketing-e-sales-analytics/revforce-api.git
 cd revforce-api
+```
 
+### 🐋 Utilizando o `docker compose` (mais fácil)
+
+O [`docker compose`](https://docs.docker.com/compose/) é uma ferramenta utlizada para definir e executar aplicações com múltiplos containers/serviços. Com ele, podemos escrever um arquivo de configuração YAML que define todos os serviços, volumes e redes do projeto, e o docker lida com o ciclo de vida de todos os componentes. 
+
+Primeiramente, verifique se o compose está instalado ([documentação](https://docs.docker.com/compose/install/)):
+> Se você tem o docker desktop, o compose vem junto por padrão
+
+```bash
+# Verifique a instalacao do docker compose
+docker compose version
+```
+
+Com o compose instalado corretamente, basta executar o seguinte comando para executar toda a aplicação, banco de dados e api:
+
+```bash
+# Sobe todos os servicos necessarios
+docker compose up
+```
+
+> Na primeira vez, a aplicação deve levar algum tempo para instalar todas as dependencias.
+
+Para parar a aplicação, pressione `CTRL-C` no terminal. 
+
+Para remover todos os dados do banco e começar do zero, execute (não deve ser necessário, mas é bom saber): 
+
+```bash
+# Apaga todos os dados
+docker compose down -v
+```
+
+> NOTA: quando utilizar o `docker`/`docker compose` para rodar a aplicação, as dependencias não serão instaladas no seu sistema de arquivos, então a IDE não vai reconheçer os pacotes importados. Para resolver isso, execute os primeiros comandos da configuração manual, mas ainda use o `docker` para rodar a aplicação.
+
+### 💪 Configuração manual
+
+
+```bash
 # Instale poetry (gerenciador de dependências)
 pip install poetry
 
