@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 from app.config.application import get_http_client
 from app.config.database import create_tables
-from app.routers import insights, todos
+from app.routers import insights, todos, account, account_config
 
 
 @asynccontextmanager
@@ -21,3 +21,5 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(todos.router)
 app.include_router(insights.router)
+app.include_router(account.router)
+app.include_router(account_config.router)
