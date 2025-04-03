@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from app.models.account_config import AccountType
 
 class AccountConfigRequest(BaseModel):
-    id_user: str
-    tipo: AccountType
-    chave_api: str
+    account_id: str
+    type: AccountType
+    api_secret: str
 
