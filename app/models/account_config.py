@@ -11,10 +11,10 @@ class AccountType(str, enum.Enum):
     crm = 'crm'
 
 class AccountConfig(Base):
-    __tablename__ = "account_config"
+    __tablename__ = "account_configs"
     
     id: Mapped[str] = mapped_column(primary_key=True)
-    id_user: Mapped[str] = mapped_column(ForeignKey("account.id"))
-    tipo: Mapped[AccountType] = mapped_column(Enum(AccountType))
-    chave_api: Mapped[str]
+    account_id: Mapped[str] = mapped_column(ForeignKey("accounts.id"))
+    type: Mapped[AccountType] = mapped_column(Enum(AccountType))
+    api_secret: Mapped[str]
 
