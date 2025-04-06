@@ -12,7 +12,7 @@ class DeviceType(str, enum.Enum):
     other = 'other'
 
 class AdMetric(Base):
-    __tablename__ = "ads"
+    __tablename__ = "ad_metrics"
 
     id: Mapped[str] = mapped_column(primary_key=True)
     ad_id: Mapped[str] = mapped_column(ForeignKey("ads.id"))
@@ -22,7 +22,7 @@ class AdMetric(Base):
     clicks: Mapped[int]
     device: Mapped[DeviceType] = mapped_column(Enum(DeviceType))
     date: Mapped[datetime]
-    hour: Mapped[int] = mapped_column(min=0, max=23)
-    day: Mapped[int] = mapped_column(min=1, max=31)
-    month: Mapped[int] = mapped_column(min=1, max=12)
+    hour: Mapped[int]
+    day: Mapped[int]
+    month: Mapped[int]
     year: Mapped[int]

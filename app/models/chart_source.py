@@ -4,7 +4,7 @@ import enum
 
 from app.config.database import Base
 
-class sourceTable(str, enum.Enum):
+class SourceTable(str, enum.Enum):
     campaign = 'campaign'
     ad = 'ad'
 
@@ -13,4 +13,4 @@ class ChartSource(Base):
     id: Mapped[str] = mapped_column(primary_key=True)
     chart_id: Mapped[str] = mapped_column(ForeignKey('charts.id'))
     source_id: Mapped[str]
-    source_table: Mapped[sourceTable] = mapped_column(Enum(sourceTable))
+    source_table: Mapped[SourceTable] = mapped_column(Enum(SourceTable))

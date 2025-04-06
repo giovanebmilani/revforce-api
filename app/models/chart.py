@@ -24,7 +24,7 @@ class ChartSegment(str, enum.Enum):
 class Chart(Base):
     __tablename__ = "charts"
     id: Mapped[str] = mapped_column(primary_key=True)
-    account_id: Mapped[str]
+    account_id: Mapped[str] = mapped_column(ForeignKey('accounts.id'))
     name: Mapped[str]
     type: Mapped[ChartType] = mapped_column(Enum(ChartType))
     metric: Mapped[ChartMetric] = mapped_column(Enum(ChartMetric))
