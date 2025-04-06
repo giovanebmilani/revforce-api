@@ -9,7 +9,7 @@ class ChartType(str, enum.Enum):
     line = 'line'
     bar = 'bar'
     horizontal_bar = 'horizontal_bar'
-    grouped_bar = 'grouped-bar'
+    grouped_bar = 'grouped_bar'
 
 class ChartMetric(str, enum.Enum):
     ctr = 'ctr'
