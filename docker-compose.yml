@@ -21,6 +21,8 @@ services:
   fastapi:
     build: .
     container_name: revforce-api
+    volumes:
+      - ./app:/app/app
     depends_on:
       db:
         condition: service_healthy
