@@ -17,7 +17,7 @@ class AccountRepository:
             select(Account)
         )
 
-        return result.scalars().all()
+        return list(result.scalars().all())
 
     async def get(self, id: str) -> Account | None:
         result = await self.__session.execute(
