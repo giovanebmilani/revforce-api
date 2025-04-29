@@ -5,7 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config.application import get_http_client
 from app.config.database import create_tables
-from app.routers import insights, todos, account, account_config, refresh
+from app.routers import insights, todos, account, account_config, refresh, activecampaign
+
 
 
 @asynccontextmanager
@@ -38,3 +39,4 @@ app.include_router(insights.router)
 app.include_router(account.router)
 app.include_router(account_config.router)
 app.include_router(refresh.router)
+app.include_router(activecampaign.router)
