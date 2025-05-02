@@ -69,8 +69,6 @@ class ChartService:
             segment=chart_req.segment,
         ))
 
-        print(chart.id)
-
         for source in chart_req.sources:
             await self.__source_repo.create(ChartSource(
                 chart_id=chart.id,
