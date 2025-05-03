@@ -16,6 +16,10 @@ async def get_chart(chart_id: str, service: ChartService = Depends(ChartService.
 async def create_chart(chart: ChartRequest, service: ChartService = Depends(ChartService.get_service)):
     return await service.create_chart(chart)
 
+@router.put("/{chart_id}", status_code=status.HTTP_201_CREATED)
+async def update_chart(chart_id: str, chart: ChartRequest, service: ChartService = Depends(ChartService.get_service)):
+    return await service.update_chart(chart_id, chart)
+
 @router.get("/{account_id}/all", status_code=status.HTTP_200_OK)
 async def list_chart(account_id: str, service: ChartService = Depends(ChartService.get_service)):
     return await service.list_chart(account_id)

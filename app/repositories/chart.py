@@ -1,5 +1,5 @@
 from fastapi import Depends
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import uuid4
 
@@ -38,6 +38,24 @@ class ChartRepository:
                     name=chart.name,
                     id=str(uuid4()),
                     account_id=chart.account_id,
+                    type=chart.type,
+                    metric=chart.metric,
+                    period=chart.period,
+                    granularity=chart.granularity,
+                    segment=chart.segment
+                ).returning(Chart)
+        )
+
+        await self.__session.commit()
+
+        return result.scalar_one()
+
+    async def update(self, chart: Chart) -> Chart:
+        result = await self.__session.execute(
+            update(Chart)
+                .where(Chart.id == chart.id)
+                .values(
+                    name=chart.name,
                     type=chart.type,
                     metric=chart.metric,
                     period=chart.period,
