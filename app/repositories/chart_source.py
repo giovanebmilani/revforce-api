@@ -1,6 +1,6 @@
 from uuid import uuid4
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, delete, update
 from fastapi import Depends
 
 from app.config.database import get_db
@@ -18,7 +18,6 @@ class ChartSourceRepository:
         return chart_source
 
     async def create(self, source: ChartSource) -> ChartSource:
-        print('one!!!!')
         result = await self.__session.execute(
             insert(ChartSource)
                 .values(
@@ -29,15 +28,34 @@ class ChartSourceRepository:
                 ).returning(ChartSource)
         )
 
-        print("two")
-
         chart_source = result.scalar_one()
          
-        print("threee")
-
         await self.__session.commit()
 
         return chart_source
+
+    async def update(self, source: ChartSource) -> ChartSource:
+        result = await self.__session.execute(
+            update(ChartSource)
+            .where(ChartSource.id == source.id)
+            .values(
+                chart_id=source.chart_id,
+                source_id=source.source_id,
+                source_table=source.source_table,
+            )
+            .returning(ChartSource)
+        )
+
+        updated_source = result.scalar_one_or_none()
+        await self.__session.commit()
+
+        return updated_source
+
+    async def delete_by_chart_id(self, chart_id: str):
+        await self.__session.execute(
+            delete(ChartSource).where(ChartSource.chart_id == chart_id)
+        )
+        await self.__session.commit()
 
     @classmethod
     async def get_service(cls, db: AsyncSession = Depends(get_db)):

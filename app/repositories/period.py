@@ -43,7 +43,7 @@ class PeriodRepository:
         result = await self.__session.execute(
             update(Period)
                 .where(Period.id == id)
-                .values(id=str(uuid4()), type=period.type, amount=period.amount)
+                .values(type=period.type, amount=period.amount)
                 .returning(Period)
         )
 
