@@ -1,77 +1,60 @@
-from pydantic import BaseModel,Field,ValidationError,field_validator
-
+from datetime import datetime
+from typing import Optional
+from pydantic import BaseModel, Field
 from app.models.chart import ChartMetric, ChartSegment, ChartType
+from app.models.period import PeriodType
+from app.models.chart_source import SourceTable
+from app.models.ad_metric import DeviceType
+import uuid
+
+class PeriodSchema(BaseModel):
+    type: PeriodType
+    amount: int
+
+class SourceSchema(BaseModel):
+    source_table: SourceTable
+    source_id: str
 
 class ChartRequest(BaseModel):
-    id: str
     account_id: str
     name: str = Field(min_length=3)
     type: ChartType
     metric: ChartMetric
-    period: str
-    granularity: str
-    source: str
-    segment: ChartSegment
+    period: PeriodSchema
+    granularity: PeriodSchema
+    sources: list[SourceSchema]
+    segment: Optional[ChartSegment]
 
-    @field_validator('account_id')
-    @classmethod
-    def check_account_id(cls, v: str) -> str:
-        if v is None:
-            raise ValueError('Account id não deve ser nulo')
-        elif v == "":
-            raise ValueError('Account id não deve ser vazio')
-        elif not v.isdigit():
-            raise ValueError('Account id deve ser um número inteiro positivo')
-        v_int = int(v)
-        if v_int<1:
-            raise ValueError('Account id deve ser valor inteiro maior que zero')
-        return v
-        
-    @field_validator('type')
-    @classmethod
-    def check_type(cls, v: ChartType) -> ChartType:
-        if v not in ChartType:
-            raise ValueError('O tipo de gráfico não é válido')
-        return v
-        
-    @field_validator('metric')
-    @classmethod
-    def check_type(cls, v: ChartMetric) -> ChartMetric:
-        if v not in ChartMetric:
-            raise ValueError('A métrica do gráfico não é válida')
-        return v
-    
-    @field_validator('period')
-    @classmethod
-    def check_period(cls, v: str) -> str:
-        if v is None:
-            raise ValueError('Período não deve ser nulo')
-        elif v == "":
-            raise ValueError('Período não deve ser vazio')
-        elif not v.isdigit():
-            raise ValueError('Período deve ser um número inteiro positivo')
-        v_int = int(v)
-        if v_int<1:
-            raise ValueError('Período deve ser um valor inteiro maior que zero')
-        return v
+class PeriodResponse(BaseModel):
+    type: PeriodType
+    amount: int
 
-    @field_validator('source')
-    @classmethod
-    def check_source(cls, v: str) -> str:
-        if v is None:
-            raise ValueError('Source não deve ser nulo')
-        elif v == "":
-            raise ValueError('Source não deve ser vazio')
-        elif not v.isdigit():
-            raise ValueError('Source deve ser um número inteiro positivo')
-        v_int = int(v)
-        if v_int<1:
-            raise ValueError('Source deve ser um valor inteiro maior que zero')
-        return v
-    
-    @field_validator('segment')
-    @classmethod
-    def check_segment(cls, v: ChartSegment) -> ChartSegment:
-        if v not in ChartSegment:
-            raise ValueError('O segmento do gráfico não é válido')
-        return v
+class SourceResponse(BaseModel):
+    id: str
+    chart_id: str
+    source_table: SourceTable
+    source_id: str
+
+class CompleteChart(BaseModel):
+    id: str
+    name: str = Field(min_length=3)
+    type: ChartType
+    metric: ChartMetric
+    period: PeriodResponse
+    granularity: PeriodResponse
+    sources: list[SourceResponse]
+    segment: Optional[ChartSegment]
+
+class ChartDataPoint(BaseModel):
+    source_id: str
+    source_table: SourceTable
+    value: int
+    date: datetime
+    device: DeviceType | None
+
+
+class ChartResponse(BaseModel):
+    chart: CompleteChart
+    data: list[ChartDataPoint]
+
+
