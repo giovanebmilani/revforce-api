@@ -1,5 +1,5 @@
 from fastapi import Depends
-from sqlalchemy import select, insert, update
+from sqlalchemy import select, insert, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import uuid4
 
@@ -38,6 +38,35 @@ class ChartRepository:
                     name=chart.name,
                     id=str(uuid4()),
                     account_id=chart.account_id,
+                    type=chart.type,
+                    metric=chart.metric,
+                    period_id=chart.period_id,
+                    granularity_id=chart.granularity_id,
+                    segment=chart.segment
+                ).returning(Chart)
+        )
+
+        await self.__session.commit()
+
+        return result.scalar_one()
+    
+    async def delete(self, id: str) -> Chart:
+        chart = await self.get(id)
+
+        # Para o cascade funcionar, é preciso utilizar o delete pelo ORM
+        # https://docs.sqlalchemy.org/en/20/orm/queryguide/dml.html#orm-queryguide-update-delete-caveats
+        await self.__session.delete(chart)
+
+        await self.__session.commit()
+
+        return chart
+
+    async def update(self, chart: Chart) -> Chart:
+        result = await self.__session.execute(
+            update(Chart)
+                .where(Chart.id == chart.id)
+                .values(
+                    name=chart.name,
                     type=chart.type,
                     metric=chart.metric,
                     period=chart.period,

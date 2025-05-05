@@ -6,6 +6,7 @@ import enum
 from app.config.database import Base
 
 if TYPE_CHECKING:
+    from .period import Period
     from .chart_source import ChartSource
 
 class ChartType(str, enum.Enum):
@@ -33,9 +34,11 @@ class Chart(Base):
     name: Mapped[str]
     type: Mapped[ChartType] = mapped_column(Enum(ChartType))
     metric: Mapped[ChartMetric] = mapped_column(Enum(ChartMetric))
-    period: Mapped[str] = mapped_column(ForeignKey("periods.id"))
-    granularity: Mapped[str] = mapped_column(ForeignKey("periods.id"))
+    period_id: Mapped[str] = mapped_column(ForeignKey("periods.id"))
+    granularity_id: Mapped[str] = mapped_column(ForeignKey("periods.id"))
     segment: Mapped[ChartSegment | None] = mapped_column(Enum(ChartSegment))
 
+    period: Mapped["Period"] = relationship("Period", foreign_keys=[period_id], single_parent=True, cascade="all, delete-orphan")
+    granularity: Mapped["Period"] = relationship("Period", foreign_keys=[granularity_id], single_parent=True, cascade="all, delete-orphan")
     # Relacionamento reverso
-    sources: Mapped[List["ChartSource"]] = relationship("ChartSource")
+    sources: Mapped[List["ChartSource"]] = relationship("ChartSource", cascade="all, delete-orphan")

@@ -64,8 +64,8 @@ class ChartService:
             name=chart_req.name,
             type=chart_req.type,
             metric=chart_req.metric,
-            period=period.id,
-            granularity=granularity.id,
+            period_id=period.id,
+            granularity_id=granularity.id,
             segment=chart_req.segment,
         ))
 
@@ -73,6 +73,49 @@ class ChartService:
         for source in chart_req.sources:
             await self.__source_repo.create(ChartSource(
                 chart_id=chart.id,
+                source_id=source.source_id,
+                source_table=source.source_table,
+            ))
+
+        return chart
+    
+    async def delete_chart(self, chart_id: str):
+        await self.__repository.delete(chart_id)
+
+    async def update_chart(self, chart_id: str, chart_req: ChartRequest):
+        chart_to_update = await self.__repository.get(chart_id)
+
+        if chart_to_update is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found.")
+
+        period = await self.__period_repo.update(chart_to_update.period, Period(
+            type=chart_req.period.type,
+            amount=chart_req.period.amount,
+        ))
+
+        granularity = await self.__period_repo.update(chart_to_update.granularity, Period(
+            type=chart_req.granularity.type,
+            amount=chart_req.granularity.amount,
+        ))
+
+        updated_chart = Chart(
+            id=chart_to_update.id,
+            account_id=chart_to_update.account_id, # don't change the account id
+            name=chart_req.name,
+            type=chart_req.type,
+            metric=chart_req.metric,
+            period=period.id,
+            granularity=granularity.id,
+            segment=chart_req.segment,
+        )
+
+        chart = await self.__repository.update(updated_chart)
+
+        await self.__source_repo.delete_by_chart_id(chart_id)
+
+        for source in chart_req.sources:
+            await self.__source_repo.create(ChartSource(
+                chart_id=chart_id,
                 source_id=source.source_id,
                 source_table=source.source_table,
             ))

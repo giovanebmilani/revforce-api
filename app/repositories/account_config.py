@@ -76,9 +76,6 @@ class AccountConfigRepository:
 
         return result.scalar_one_or_none()
 
-
-
-
     @classmethod
     async def get_service(cls, db: AsyncSession = Depends(get_db)):
         return cls(db)
