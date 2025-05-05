@@ -20,4 +20,4 @@ class AccountConfig(Base):
     account_id: Mapped[str] = mapped_column(ForeignKey("accounts.id"))
     type: Mapped[AccountType] = mapped_column(Enum(AccountType))
     api_secret: Mapped[str]
-    last_refresh: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+    last_refresh: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
