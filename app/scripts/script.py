@@ -106,7 +106,8 @@ async def populate_db(
             id=str(uuid.uuid4()),
             account_id=acc.id,
             type=AccountType.facebook_ads,
-            api_secret="invalid secret test only"
+            api_secret="invalid secret test only",
+            last_refresh=datetime.now()
         )
         db.add(meta)
 
@@ -122,7 +123,8 @@ async def populate_db(
             id=str(uuid.uuid4()),
             account_id=acc.id,
             type=AccountType.google_ads,
-            api_secret="invalid secret test only"
+            api_secret="invalid secret test only",
+            last_refresh=datetime.now()
         )
         db.add(google)
 

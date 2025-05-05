@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "revforce",
+  "private_key_id": "dc6aea7c721878b31dcaa996c0acf930bba95345",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDrAVP8GMnh+2Xf\nsleKcVPz8nYF7nLfyWEq73HwW9+etHJz4G+GbXxArTHbOeUZKmCNC9mFPqkcCBfN\nT02F/G8FFWvk/kSPNjnTRRA0MAeLCX+itDGbGkhGfj5nd5qrbT5VTjAtUp2UsWUh\nJi/MS+OTIU3yeB5mPaEhGa4FY92wSrlHv/t+QS3cn0l4WASzjg8ko/rQ1KaG9bJg\ngYM6X4nEVTaSNQBlZVXqYtgC6YHoPJHBjt1wkSzZVaiVb7jfOXcs8LXX8vH/ldqK\nJmHbPo8GP4/90FdN4UPVrX9rRC/WqPg0UclG9wDQDTRAhTNHPqGr0iUFySXWjaGf\nABN9Blx7AgMBAAECggEAA/e9RcPbYLvgX/MAZF9+dd9xm68HdHzPbaymRVMfxuuw\nBQHUkDX4A5WJAnULR639/FOnZAcHTuhaEobUvb7h1vmiHTcnzC0zs7v2RpNLBU9v\nPr2BGufKMZp/DjsoOt240DLmQFWlQHXwSat94hqj6H+G8+GQTdSbjFYFKKUjgI7y\nIonmPQUGHwDuTtboBY/Nb1xlGQer6iWIRTuLF2PGK2HBxwn6DssA6K0LmrfMTI7X\nl84LIXOkotixlpHQ/H1xJzquH8Rf4+2GdLHktZtW5htiWJ2+lN7rQiH0wvS/IXfS\nYR2jrioMFccdUgk7D1iFBb4dF420iTRvx1DZtecxIQKBgQD2ogU4UXmMK615wMZa\nmCBAkAOV6oTVKvOBdia9/ir74o2Io18g93cpnTd1xJM2nvgxWXLsisDoKNk3CrjI\nyesWtO0ZO+2Tp3+gHzlcEZU/0l4dTFrhbZX/6LucMNbo3EUEakm807kAPhJrXI0n\nHbH2IEM62u2l1bVerSJ7YX+yGwKBgQDz7kDFgdwTDSErCrGCNHTdO/B0TW+khIJE\noq0PSTFNLkL1H5f2J+4CuxN9ItPrMHqYej1Fk54K96sxgoX+AneGmoZ619PvzLY9\nmxVqxsIQSPwQtkvitFXgxprrsXWzqu3g1QRHQtXVHXGQwDZC3Hz31VSmdLVODOHA\nSJiG7Z+lIQKBgHobR1hVxkbmzRGNpubtkHJGmu/bV36usDa1h4LjVua0iPxQXmXU\n/3Nj+jRdacFOPXU5YxPHsrB+oOSGc2w9xB3O3+BxcjN7Z02gh+aUcf9SKPR6fDhF\n6FD2KgSvjYdmnukLsoxBisOa98Wd4eiu5BAGcyKth6FmSFCiiYLqh61nAoGAW9Ga\nBf5stasiig4bZTSTrNcsGssvNBFA688EL5XQfgnk4FoFHH5JRDPhESBz/rqf2xdg\nSvlW6y/w+9Dy2PtavIscBc+KEmDPVH80351zXSfr4eqMxAg3r0Vy+TcyY+/6XMAy\nPRS2YuMTZXZEtoRCchOWKpYRzRBiRbvN1jRJ/KECgYAUg7D5tiqHAmTtiM0OlnKI\nQF0kccMDJjcL1f5dTLIaRCwrjL8AzGBVlUzQnppuQ3pccRwsMPSkWjfAV/TP/IFG\n8jRIBW4FUOZUTtykCmeJyqqGoqHD+6KHFmRyL1I3dzctLiwzPx+zNaPk+GaEnl/l\n1pV1tAdeSDc8izxUSELfRQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "revforce@revforce.iam.gserviceaccount.com",
+  "client_id": "105534493616317639137",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/revforce%40revforce.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

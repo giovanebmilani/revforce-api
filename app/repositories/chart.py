@@ -1,10 +1,14 @@
 from fastapi import Depends
-from sqlalchemy import select, insert, update, delete
+from sqlalchemy import select, insert, update, delete, alias
+from sqlalchemy.orm import joinedload
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import uuid4
 
 from app.config.database import get_db
 from app.models.chart import Chart
+from app.models.period import Period
+
 
 class ChartRepository:
     def __init__(self, session: AsyncSession):
@@ -12,17 +16,22 @@ class ChartRepository:
 
     async def list(self, account_id: str) -> list[Chart]:
         result = await self.__session.execute(
-            select(Chart).where(Chart.account_id == account_id)
+            select(Chart)
+            .options(joinedload(Chart.period), joinedload(Chart.granularity), joinedload(Chart.sources))
+            .where(Chart.account_id == account_id)
         )
         
-        return list(result.scalars().all())
+        return list(result.unique().scalars().all())
+
 
     async def get(self, id: str) -> Chart | None:
-        result = await self.__session.execute(
-            select(Chart).where(Chart.id == id)
+        result = await self.__session.scalars(
+            select(Chart)
+            .options(joinedload(Chart.period), joinedload(Chart.granularity), joinedload(Chart.sources))
+            .where(Chart.id == id)
         )
 
-        return result.scalar_one_or_none()
+        return result.unique().one_or_none()
 
     async def get_by_name(self, name: str) -> Chart | None:
         result = await self.__session.execute(
@@ -79,23 +88,6 @@ class ChartRepository:
 
         return result.scalar_one()
 
-    async def update(self, chart: Chart) -> Chart:
-        result = await self.__session.execute(
-            update(Chart)
-                .where(Chart.id == chart.id)
-                .values(
-                    name=chart.name,
-                    type=chart.type,
-                    metric=chart.metric,
-                    period=chart.period,
-                    granularity=chart.granularity,
-                    segment=chart.segment
-                ).returning(Chart)
-        )
-
-        await self.__session.commit()
-
-        return result.scalar_one()
 
     @classmethod
     async def get_service(cls, db: AsyncSession = Depends(get_db)):
