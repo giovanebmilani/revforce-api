@@ -3,6 +3,8 @@ from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import ForeignKey, Enum
 
+import app.models.ad
+
 from app.config.database import Base
 
 class DeviceType(str, enum.Enum):
