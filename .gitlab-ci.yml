@@ -4,6 +4,9 @@ stages:
 
 build:
   stage: build
+  image: docker:latest
+  services:
+    - docker:19.03.12-dind 
   tags:
     - backend
   script:
