@@ -2,71 +2,24 @@ stages:
   - build
   - deploy
 
-variables:
-  DOCKER_IMAGE: $CI_REGISTRY_USERNAME/revforce
-  DOCKER_NETWORK: app_network
-
-build-image:
+build:
   stage: build
-  image: docker:24.0
   tags:
-    - python
-  services:
-    - docker:24.0-dind
+  - backend
   script:
-    - docker login -u $CI_REGISTRY_USERNAME -p $CI_REGISTRY_PASSWORD
-    - docker build -t $DOCKER_IMAGE:latest .
-    - docker push $DOCKER_IMAGE:latest
-  only:
-    - main  # Ou sua branch de produção
-
-deploy-production:
-  stage: deploy
-  image: docker:24.0
-  tags:
-    - python
-  services:
-    - docker:24.0-dind
-  script:
-    - docker login -u $CI_REGISTRY_USERNAME -p $CI_REGISTRY_PASSWORD
-    
-    # 1. Parar e remover containers existentes
-    - docker stop revforce-api postgres_db || true
-    - docker rm revforce-api postgres_db || true
-    
-    # 2. Criar rede se não existir
-    - docker network create $DOCKER_NETWORK || true
-    
-    # 3. Subir banco de dados
-    - docker run -d \
-        --name postgres_db \
-        --network $DOCKER_NETWORK \
-        -e POSTGRES_USER=postgres \
-        -e POSTGRES_PASSWORD=postgres \
-        -e POSTGRES_DB=revforce \
-        -v postgres_data:/var/lib/postgresql/data \
-        -p 5432:5432 \
-        --health-cmd="pg_isready -U postgres" \
-        --health-interval=5s \
-        --health-timeout=5s \
-        --health-retries=5 \
-        postgres:15
-    
-    # 4. Aguardar banco ficar saudável
-    - docker inspect --format='{{json .State.Health}}' postgres_db
-    - sleep 10  # Aguarda inicialização
-    
-    # 5. Subir aplicação
-    - docker run -d \
-        --name revforce-api \
-        --network $DOCKER_NETWORK \
-        -e DATABASE_URL="postgresql+asyncpg://postgres:postgres@postgres_db:5432/revforce" \
-        -p 8000:8000 \
-        -v $PWD/app:/app/app \
-        $DOCKER_IMAGE:latest
-    
-    # 6. Verificar status
-    - docker ps
-    - docker logs revforce-api --tail=50
+    - docker build -t revforce-app .
   only:
     - main
+    - pipe-deploy
+
+deploy:
+  stage: deploy
+  tags:
+  - backend
+  script:
+    - docker stop revforce-app || true
+    - docker rm revforce-app || true
+    - docker run -d -p 8000:8000 -e DATABASE_URL="$DATABASE_URL" revforce-app
+  only:
+    - main
+    - pipe-deploy
