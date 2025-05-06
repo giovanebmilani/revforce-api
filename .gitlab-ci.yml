@@ -2,88 +2,14 @@ stages:
   - build
   - deploy
 
-variables:
-  DOCKER_IMAGE: $CI_REGISTRY_USERNAME/revforce
-  DOCKER_NETWORK: app_network
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_TLS_CERTDIR: ""
-
-build-image:
+build:
   stage: build
-  image: docker:24.0
-  tags:
-    - python
-  services:
-    - name: docker:24.0-dind
-      alias: docker
-  variables:
-    DOCKER_DRIVER: overlay2
   script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USERNAME" --password-stdin
-    - docker build -t $DOCKER_IMAGE:latest .
-    - docker push $DOCKER_IMAGE:latest
-  only:
-    - pipe-deploy
-  privileged: true
+    - docker build -t revforce-app .
 
-deploy-production:
+deploy:
   stage: deploy
-  image: docker:24.0
-  tags:
-    - python
-  services:
-    - name: docker:24.0-dind
-      alias: docker
-  variables:
-    DOCKER_DRIVER: overlay2
   script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USERNAME" --password-stdin
-    
-    # 1. Stop and remove existing containers
-    - docker stop revforce-api postgres_db || true
-    - docker rm revforce-api postgres_db || true
-    
-    # 2. Create network if not exists
-    - docker network create $DOCKER_NETWORK || true
-    
-    # 3. Start database
-    - docker run -d \
-        --name postgres_db \
-        --network $DOCKER_NETWORK \
-        -e POSTGRES_USER=postgres \
-        -e POSTGRES_PASSWORD=postgres \
-        -e POSTGRES_DB=revforce \
-        -v postgres_data:/var/lib/postgresql/data \
-        -p 5432:5432 \
-        --health-cmd="pg_isready -U postgres" \
-        --health-interval=5s \
-        --health-timeout=5s \
-        --health-retries=5 \
-        postgres:15
-    
-    # 4. Wait for database to be healthy
-    - |
-      for i in {1..30}; do
-        if [ "$(docker inspect -f '{{.State.Health.Status}}' postgres_db)" = "healthy" ]; then
-          echo "Database is ready"
-          break
-        fi
-        echo "Waiting for database to be ready..."
-        sleep 2
-      done
-    
-    # 5. Start application
-    - docker run -d \
-        --name revforce-api \
-        --network $DOCKER_NETWORK \
-        -e DATABASE_URL="postgresql+asyncpg://postgres:postgres@postgres_db:5432/revforce" \
-        -p 8000:8000 \
-        -v $PWD/app:/app/app \
-        $DOCKER_IMAGE:latest
-    
-    # 6. Check status
-    - docker ps
-    - docker logs revforce-api --tail=50
-  only:
-    - pipe-deploy
-  privileged: true
+    - docker stop revforce-app || true
+    - docker rm revforce-app || true
+    - docker run -d -p 8000:8000 -e DATABASE_URL="$DATABASE_URL" revforce-app
