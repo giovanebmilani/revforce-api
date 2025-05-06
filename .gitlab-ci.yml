@@ -4,12 +4,22 @@ stages:
 
 build:
   stage: build
+  tags:
+    - backend
   script:
     - docker build -t revforce-app .
+  only:
+    - main
+    - pipe-deploy
 
 deploy:
   stage: deploy
+  tags:
+    - backend
   script:
     - docker stop revforce-app || true
     - docker rm revforce-app || true
     - docker run -d -p 8000:8000 -e DATABASE_URL="$DATABASE_URL" revforce-app
+  only:
+    - main
+    - pipe-deploy
