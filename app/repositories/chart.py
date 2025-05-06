@@ -88,6 +88,18 @@ class ChartRepository:
 
         return result.scalar_one()
 
+    async def update_order(self, chart_id: str, position: int) -> Chart:
+        result = await self.__session.execute(
+            update(Chart)
+                .where(Chart.id == chart_id)
+                .values(
+                    position=position
+                ).returning(Chart)
+        )
+
+        await self.__session.commit()
+
+        return result.scalar_one()
 
     @classmethod
     async def get_service(cls, db: AsyncSession = Depends(get_db)):

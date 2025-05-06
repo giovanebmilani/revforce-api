@@ -6,7 +6,7 @@ import uuid
 from app.models.chart import Chart
 from app.models.period import Period
 from app.models.chart_source import ChartSource
-from app.schemas.chart import ChartRequest, ChartResponse
+from app.schemas.chart import ChartRequest, ChartResponse, UpdateChartOrderRequest
 
 from app.repositories.chart import ChartRepository
 from app.repositories.period import PeriodRepository
@@ -145,6 +145,11 @@ class ChartService:
 
         return chart
 
+    async def update_order(self, new_order: UpdateChartOrderRequest):
+        for id, pos in new_order.positions.items():
+            positions = await self.__repository.update_order(id, pos)
+
+        return positions
 
     @classmethod
     async def get_service(

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict
 from pydantic import BaseModel, Field
 from app.models.chart import ChartMetric, ChartSegment, ChartType
 from app.models.period import PeriodType
@@ -58,3 +58,5 @@ class ChartResponse(BaseModel):
     data: list[ChartDataPoint]
 
 
+class UpdateChartOrderRequest(BaseModel):
+    positions: Dict[str, int]

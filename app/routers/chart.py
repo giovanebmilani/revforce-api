@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from starlette import status
 from app.services.charts import ChartService
-from app.schemas.chart import ChartRequest, ChartResponse
+from app.schemas.chart import ChartRequest, ChartResponse, UpdateChartOrderRequest
 
 router = APIRouter(
     prefix="/chart",
@@ -28,3 +28,6 @@ async def delete_chart(chart_id: str, service: ChartService = Depends(ChartServi
 async def update_chart(chart_id: str, chart: ChartRequest, service: ChartService = Depends(ChartService.get_service)):
     return await service.update_chart(chart_id, chart)
 
+@router.put("/order", status_code=status.HTTP_200_OK0)
+async def update_order(body: UpdateChartOrderRequest, service: ChartService = Depends(ChartService.get_service)):
+    return await service.update_order(body)
