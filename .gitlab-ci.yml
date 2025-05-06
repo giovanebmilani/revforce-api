@@ -8,7 +8,6 @@ build:
   services:
     - name: docker:19.03.12-dind  # Docker-in-Docker service
       alias: docker  # Alias to ensure the runner can resolve "docker"
-  privileged: true
   script:
     - docker info  # This command ensures the connection to Docker is established
     - docker build -t revforce-app .
