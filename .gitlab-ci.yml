@@ -19,11 +19,11 @@ build-image:
   variables:
     DOCKER_DRIVER: overlay2
   script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USERNAME" --password-stdin
+    - docker login -u $CI_REGISTRY_USERNAME -p $CI_REGISTRY_PASSWORD
     - docker build -t $DOCKER_IMAGE:latest .
     - docker push $DOCKER_IMAGE:latest
   only:
-    - main
+    - pipe-deploy
 
 deploy-production:
   stage: deploy
@@ -36,7 +36,7 @@ deploy-production:
   variables:
     DOCKER_DRIVER: overlay2
   script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USERNAME" --password-stdin
+    - docker login -u $CI_REGISTRY_USERNAME -p $CI_REGISTRY_PASSWORD
     
     # 1. Stop and remove existing containers
     - docker stop revforce-api postgres_db || true
