@@ -5,6 +5,8 @@ stages:
 build:
   stage: build
   image: docker:latest  # Use Docker image to run the build
+  tags:
+  - backend
   services:
     - name: docker:19.03.12-dind  # Docker-in-Docker service
       alias: docker  # Alias to ensure the runner can resolve "docker"
@@ -17,6 +19,8 @@ build:
 
 deploy:
   stage: deploy
+  tags:
+  - backend
   script:
     - docker stop revforce-app || true
     - docker rm revforce-app || true
