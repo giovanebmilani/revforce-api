@@ -5,6 +5,8 @@ stages:
 variables:
   DOCKER_IMAGE: $CI_REGISTRY_USERNAME/revforce
   DOCKER_NETWORK: app_network
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
 
 build-image:
   stage: build
@@ -12,13 +14,16 @@ build-image:
   tags:
     - python
   services:
-    - docker:24.0-dind
+    - name: docker:24.0-dind
+      alias: docker
+  variables:
+    DOCKER_DRIVER: overlay2
   script:
-    - docker login -u $CI_REGISTRY_USERNAME -p $CI_REGISTRY_PASSWORD
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USERNAME" --password-stdin
     - docker build -t $DOCKER_IMAGE:latest .
     - docker push $DOCKER_IMAGE:latest
   only:
-    - main  # Ou sua branch de produção
+    - main
 
 deploy-production:
   stage: deploy
@@ -26,18 +31,21 @@ deploy-production:
   tags:
     - python
   services:
-    - docker:24.0-dind
+    - name: docker:24.0-dind
+      alias: docker
+  variables:
+    DOCKER_DRIVER: overlay2
   script:
-    - docker login -u $CI_REGISTRY_USERNAME -p $CI_REGISTRY_PASSWORD
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USERNAME" --password-stdin
     
-    # 1. Parar e remover containers existentes
+    # 1. Stop and remove existing containers
     - docker stop revforce-api postgres_db || true
     - docker rm revforce-api postgres_db || true
     
-    # 2. Criar rede se não existir
+    # 2. Create network if not exists
     - docker network create $DOCKER_NETWORK || true
     
-    # 3. Subir banco de dados
+    # 3. Start database
     - docker run -d \
         --name postgres_db \
         --network $DOCKER_NETWORK \
@@ -52,11 +60,18 @@ deploy-production:
         --health-retries=5 \
         postgres:15
     
-    # 4. Aguardar banco ficar saudável
-    - docker inspect --format='{{json .State.Health}}' postgres_db
-    - sleep 10  # Aguarda inicialização
+    # 4. Wait for database to be healthy
+    - |
+      for i in {1..30}; do
+        if [ "$(docker inspect -f '{{.State.Health.Status}}' postgres_db)" = "healthy" ]; then
+          echo "Database is ready"
+          break
+        fi
+        echo "Waiting for database to be ready..."
+        sleep 2
+      done
     
-    # 5. Subir aplicação
+    # 5. Start application
     - docker run -d \
         --name revforce-api \
         --network $DOCKER_NETWORK \
@@ -65,8 +80,8 @@ deploy-production:
         -v $PWD/app:/app/app \
         $DOCKER_IMAGE:latest
     
-    # 6. Verificar status
+    # 6. Check status
     - docker ps
     - docker logs revforce-api --tail=50
   only:
-    - main
+    - pipe-deploy
