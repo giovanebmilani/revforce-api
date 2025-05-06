@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config.application import get_http_client
 from app.config.database import create_tables
-from app.routers import insights, todos, account, account_config, chart, refresh
+from app.routers import insights, todos, account, account_config, chart, refresh, campaign, ad
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -40,3 +40,5 @@ app.include_router(account.router)
 app.include_router(account_config.router)
 app.include_router(chart.router)
 app.include_router(refresh.router)
+app.include_router(ad.router)
+app.include_router(campaign.router)
