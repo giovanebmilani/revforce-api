@@ -28,6 +28,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/revforce
+      ACTIVE_CAMPAIGN_API_URL: https://fmeiroz.api-us1.com
+      ACTIVE_CAMPAIGN_API_KEY: e4770ecf98e8d6de17db9fddc9192b1f1eda02e7a8667c636bee6fe7ff8b43fea889e53f
     ports:
       - "8000:8000"
     networks:

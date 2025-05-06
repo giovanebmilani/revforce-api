@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.services.activecampaign_service import buscar_contatos, traduzir_contatos
+from app.services.activecampaign_service import search_contacts, translate_contacts
 
 router = APIRouter(
     prefix="/activecampaign",
@@ -8,8 +8,8 @@ router = APIRouter(
 
 @router.get("/leads")
 def get_leads():
-    dados = buscar_contatos()
+    dados = search_contacts()
     if not dados:
         return {"error": "Erro ao buscar dados do ActiveCampaign"}
-    leads = traduzir_contatos(dados)
+    leads = translate_contacts(dados)
     return leads

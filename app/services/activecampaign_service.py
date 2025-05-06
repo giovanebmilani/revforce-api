@@ -1,9 +1,10 @@
+import os;
 import requests
 from typing import Any, Dict, List, Optional
 from app.schemas.activecampaign import LeadSchema
 
-API_URL = "https://fmeiroz.api-us1.com"
-API_KEY = "e4770ecf98e8d6de17db9fddc9192b1f1eda02e7a8667c636bee6fe7ff8b43fea889e53f"
+API_URL = os.getenv("ACTIVE_CAMPAIGN_API_URL")
+API_KEY = os.getenv("ACTIVE_CAMPAIGN_API_KEY")
 
 headers = {
     "Api-Token": API_KEY,
@@ -12,7 +13,7 @@ headers = {
 
 def search_contacts() -> Optional[Dict[str, Any]]:
     try:
-        response = requests.get(f"{API_URL}/contacts", headers=headers)
+        response = requests.get(f"{API_URL}/api/3/contacts", headers=headers)
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -25,9 +26,9 @@ def translate_contacts(dados_api: dict) -> List[LeadSchema]:
 
     for contato in contatos:
         lead = LeadSchema(
-            nome=contato.get("firstName"),
+            name=contato.get("firstName"),
             email=contato.get("email"),
-            telefone=contato.get("phone")
+            phone=contato.get("phone")
         )
         leads.append(lead)
 
