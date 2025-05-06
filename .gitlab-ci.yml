@@ -24,6 +24,7 @@ build-image:
     - docker push $DOCKER_IMAGE:latest
   only:
     - pipe-deploy
+  privileged: true
 
 deploy-production:
   stage: deploy
@@ -85,3 +86,4 @@ deploy-production:
     - docker logs revforce-api --tail=50
   only:
     - pipe-deploy
+  privileged: true
