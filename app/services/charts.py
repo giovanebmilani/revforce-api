@@ -146,8 +146,10 @@ class ChartService:
         return chart
 
     async def update_order(self, new_order: UpdateChartOrderRequest):
+        positions = []
+        
         for id, pos in new_order.positions.items():
-            positions = await self.__repository.update_order(id, pos)
+            positions.append(await self.__repository.update_order(id, pos))
 
         return positions
 

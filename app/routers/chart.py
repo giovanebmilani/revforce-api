@@ -24,10 +24,11 @@ async def list_chart(account_id: str, service: ChartService = Depends(ChartServi
 async def delete_chart(chart_id: str, service: ChartService = Depends(ChartService.get_service)):
     return await service.delete_chart(chart_id)
 
+@router.put("/order", status_code=status.HTTP_200_OK)
+async def update_order(body: UpdateChartOrderRequest, service: ChartService = Depends(ChartService.get_service)):
+    return await service.update_order(body)
+
 @router.put("/{chart_id}", status_code=status.HTTP_201_CREATED)
 async def update_chart(chart_id: str, chart: ChartRequest, service: ChartService = Depends(ChartService.get_service)):
     return await service.update_chart(chart_id, chart)
 
-@router.put("/order", status_code=status.HTTP_200_OK0)
-async def update_order(body: UpdateChartOrderRequest, service: ChartService = Depends(ChartService.get_service)):
-    return await service.update_order(body)
