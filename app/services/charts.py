@@ -55,9 +55,11 @@ class ChartService:
     async def list_charts(self, account_id: str) -> list[ChartResponse]:
         charts = await self.__repository.list(account_id)
 
-        tasks = [self._make_chart_response(chart) for chart in charts]
+        chart_responses = []
 
-        chart_responses = await gather(*tasks)
+        for chart in charts:
+            response = await self._make_chart_response(chart)
+            chart_responses.append(response)
 
         return chart_responses
     
@@ -146,12 +148,19 @@ class ChartService:
         return chart
 
     async def update_order(self, new_order: UpdateChartOrderRequest):
-        positions = []
+        chart_ids = list(new_order.positions.keys())
+        charts = await self.__repository.get_multiple_by_ids(chart_ids)
         
-        for id, pos in new_order.positions.items():
-            positions.append(await self.__repository.update_order(id, pos))
+        for chart in charts:
+            new_pos = new_order.positions.get(chart.id)
+            if new_pos is not None:
+                chart.position = new_pos
 
-        return positions
+        await self.__repository.bulk_update_positions(charts)
+        return {"detail": "Positions updated"}
+    
+    async def get_chart_position_by_account(self, account_id: str):
+        return await self.__repository.get_chart_position_by_account(account_id)
 
     @classmethod
     async def get_service(

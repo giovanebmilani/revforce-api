@@ -103,6 +103,10 @@ class DataService:
         start_time = await self.__session.scalar(
             time_query.order_by(desc(AdMetric.date)).limit(1)
         )
+
+        if start_time is None:
+            return[]
+
         start_time -= timedelta_from_period(period)
 
         # here we can't use __session.scalars because we can't

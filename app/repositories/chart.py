@@ -1,5 +1,6 @@
+from typing import List
 from fastapi import Depends
-from sqlalchemy import select, insert, update, delete, alias
+from sqlalchemy import desc, select, insert, update, delete, alias
 from sqlalchemy.orm import joinedload
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -99,7 +100,32 @@ class ChartRepository:
 
         await self.__session.commit()
 
-        return result.scalar_one()
+        return result.scalar()
+    
+    async def get_chart_position_by_account(self, account_id: str):
+        result = await self.__session.scalar(
+            select(Chart)
+                .where(Chart.account_id == account_id)
+                .order_by(desc(Chart.position))
+                .limit(1)
+        )
+        
+        return result.position
+    
+    async def get_multiple_by_ids(self, ids: List[str]) -> List[Chart]:
+        result = await self.__session.execute(
+            select(Chart).where(Chart.id.in_(ids)).order_by(desc(Chart.position))
+        )
+
+        return list(result.scalars().all())
+    
+    async def bulk_update_positions(self, charts: List[Chart]):
+        for chart in charts:
+            await self.__session.execute(
+                update(Chart)
+                .where(Chart.id == chart.id)
+                .values(position=chart.position)
+            )
 
     @classmethod
     async def get_service(cls, db: AsyncSession = Depends(get_db)):
