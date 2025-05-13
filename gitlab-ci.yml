@@ -1,0 +1,24 @@
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  tags:
+    - backend
+  script:
+    - docker build -t revforce-app .
+
+deploy:
+  stage: deploy
+  tags:
+    - backend
+  before_script:
+    - docker network create revforce-net || true
+  script:
+    - docker stop revforce-app || true
+    - docker rm revforce-app || true
+    - docker network connect revforce-net postgres_db || true
+    - docker run -d --name revforce-app --network revforce-net -p 80:8000 -e DATABASE_URL="$DATABASE_URL" revforce-app
+  only:
+    - main
