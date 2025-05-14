@@ -18,6 +18,7 @@ class SourceSchema(BaseModel):
 class ChartRequest(BaseModel):
     account_id: str
     name: str = Field(min_length=3)
+    position: Optional[int] = None
     type: ChartType
     metric: ChartMetric
     period: PeriodSchema
@@ -38,6 +39,7 @@ class SourceResponse(BaseModel):
 class CompleteChart(BaseModel):
     id: str
     name: str = Field(min_length=3)
+    position: int
     type: ChartType
     metric: ChartMetric
     period: PeriodResponse
