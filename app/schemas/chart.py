@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict
 from pydantic import BaseModel, Field
 from app.models.chart import ChartMetric, ChartSegment, ChartType
 from app.models.period import PeriodType
@@ -18,6 +18,7 @@ class SourceSchema(BaseModel):
 class ChartRequest(BaseModel):
     account_id: str
     name: str = Field(min_length=3)
+    position: Optional[int] = None
     type: ChartType
     metric: ChartMetric
     period: PeriodSchema
@@ -38,6 +39,7 @@ class SourceResponse(BaseModel):
 class CompleteChart(BaseModel):
     id: str
     name: str = Field(min_length=3)
+    position: int
     type: ChartType
     metric: ChartMetric
     period: PeriodResponse
@@ -58,3 +60,5 @@ class ChartResponse(BaseModel):
     data: list[ChartDataPoint]
 
 
+class UpdateChartOrderRequest(BaseModel):
+    positions: Dict[str, int]
