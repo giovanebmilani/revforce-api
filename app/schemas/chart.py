@@ -7,13 +7,16 @@ from app.models.chart_source import SourceTable
 from app.models.ad_metric import DeviceType
 import uuid
 
+
 class PeriodSchema(BaseModel):
     type: PeriodType
     amount: int
 
+
 class SourceSchema(BaseModel):
     source_table: SourceTable
     source_id: str
+
 
 class ChartRequest(BaseModel):
     account_id: str
@@ -26,15 +29,18 @@ class ChartRequest(BaseModel):
     sources: list[SourceSchema]
     segment: Optional[ChartSegment]
 
+
 class PeriodResponse(BaseModel):
     type: PeriodType
     amount: int
+
 
 class SourceResponse(BaseModel):
     id: str
     chart_id: str
     source_table: SourceTable
     source_id: str
+
 
 class CompleteChart(BaseModel):
     id: str
@@ -46,6 +52,7 @@ class CompleteChart(BaseModel):
     granularity: PeriodResponse
     sources: list[SourceResponse]
     segment: Optional[ChartSegment]
+
 
 class ChartDataPoint(BaseModel):
     source_id: str
@@ -62,3 +69,21 @@ class ChartResponse(BaseModel):
 
 class UpdateChartOrderRequest(BaseModel):
     positions: Dict[str, int]
+
+
+class ChartDataPointToAnalyze(BaseModel):
+    source_table: SourceTable
+    value: int
+    date: datetime
+    device: Optional[DeviceType]
+
+
+class ChartToAnalyze(BaseModel):
+    name: str
+    type: ChartType
+    metric: ChartMetric
+    period: PeriodResponse
+    granularity: PeriodResponse
+    segment: Optional[ChartSegment]
+    data: list[ChartDataPointToAnalyze]
+ 
