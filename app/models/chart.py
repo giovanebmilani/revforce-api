@@ -37,6 +37,7 @@ class Chart(Base):
     period_id: Mapped[str] = mapped_column(ForeignKey("periods.id"))
     granularity_id: Mapped[str] = mapped_column(ForeignKey("periods.id"))
     segment: Mapped[ChartSegment | None] = mapped_column(Enum(ChartSegment))
+    position: Mapped[int] = mapped_column() # sem constraint unique, isso é verificado no service
 
     period: Mapped["Period"] = relationship("Period", foreign_keys=[period_id], single_parent=True, cascade="all, delete-orphan")
     granularity: Mapped["Period"] = relationship("Period", foreign_keys=[granularity_id], single_parent=True, cascade="all, delete-orphan")
