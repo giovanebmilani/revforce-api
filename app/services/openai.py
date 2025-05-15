@@ -2,21 +2,18 @@ from openai import OpenAI
 import json
 
 from app.config.application import settings
+from app.schemas.chat import AssistantIntegration
 
 client = OpenAI(api_key=settings.OPENAI_KEY)
 
 class OpenAIService:
     async def chat_gpt(self, assist: AssistantIntegration):
-        history=assist.messages 
-
         response = client.responses.create(
             model=assist.model,
             input=assist.messages
         )
 
-        new_message=History(role=Role.assistant, content=response.output_text)
-        history.append(new_message)
-        return history
+        return response.output_text
 
     @classmethod
     async def get_service(cls):
