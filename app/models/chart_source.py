@@ -11,6 +11,7 @@ from app.config.database import Base
 class SourceTable(str, enum.Enum):
     campaign = 'campaign'
     ad = 'ad'
+    crm = 'crm'
 
 class ChartSource(Base):
     __tablename__ = "chart_sources"
