@@ -98,7 +98,6 @@ class ChartService:
             name=chart_req.name,
             position=chart_req.position,
             type=chart_req.type,
-            metric=chart_req.metric,
             period_id=period.id,
             granularity_id=granularity.id,
             segment=chart_req.segment,
@@ -107,6 +106,7 @@ class ChartService:
         for source in chart_req.sources:
             await self.__source_repo.create(ChartSource(
                 chart_id=chart.id,
+                metrics=source.metrics,
                 source_id=source.source_id,
                 source_table=source.source_table,
             ))
@@ -154,7 +154,6 @@ class ChartService:
             name=chart_req.name,
             position=chart_req.position,
             type=chart_req.type,
-            metric=chart_req.metric,
             period_id=period.id,
             granularity_id=granularity.id,
             segment=chart_req.segment,
@@ -162,11 +161,13 @@ class ChartService:
 
         chart = await self.__repository.update(updated_chart)
 
+        # delete all the sources instead of updating, it is easier
         await self.__source_repo.delete_by_chart_id(chart_id)
 
         for source in chart_req.sources:
             await self.__source_repo.create(ChartSource(
                 chart_id=chart_id,
+                metrics=source.metrics,
                 source_id=source.source_id,
                 source_table=source.source_table,
             ))

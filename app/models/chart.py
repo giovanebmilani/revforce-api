@@ -1,13 +1,11 @@
-from typing import List, TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, Enum
 import enum
 
 from app.config.database import Base
 
-if TYPE_CHECKING:
-    from .period import Period
-    from .chart_source import ChartSource
+from .period import Period
+from .chart_source import ChartSource
 
 class ChartType(str, enum.Enum):
     pizza = 'pizza'
@@ -35,4 +33,4 @@ class Chart(Base):
     period: Mapped["Period"] = relationship("Period", foreign_keys=[period_id], single_parent=True, cascade="all, delete-orphan")
     granularity: Mapped["Period"] = relationship("Period", foreign_keys=[granularity_id], single_parent=True, cascade="all, delete-orphan")
     # Relacionamento reverso
-    sources: Mapped[List["ChartSource"]] = relationship("ChartSource", cascade="all, delete-orphan")
+    sources: Mapped[list["ChartSource"]] = relationship("ChartSource", cascade="all, delete-orphan")
