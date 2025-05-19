@@ -16,12 +16,6 @@ class ChartType(str, enum.Enum):
     horizontal_bar = 'horizontal_bar'
     grouped_bar = 'grouped_bar'
 
-class ChartMetric(str, enum.Enum):
-    ctr = 'ctr'
-    click = 'click'
-    impression = 'impression'
-    spend = 'spend'
-
 class ChartSegment(str, enum.Enum):
     device = 'device'
     date = 'date'
