@@ -21,6 +21,6 @@ async def create_todo(todo_request: TodoRequest, service: TodosService = Depends
     return await service.create_todo(todo_request)
 
 
-@router.get("/facebook", status_code=status.HTTP_201_CREATED)
+@router.get("/facebook/abc", status_code=status.HTTP_201_CREATED)
 async def create_todo(service: MetaAdsService = Depends(MetaAdsService.get_service)):
     return await service.get_campaigns()
