@@ -6,11 +6,12 @@ from starlette import status
 from app.models.account_config import AccountType
 from app.repositories.account_config import AccountConfigRepository
 from app.schemas.refresh import RefreshRequest, RefreshResponse
-
+from app.services.facebook import MetaAdsService
 
 class RefreshService:
-    def __init__(self, account_config_repository: AccountConfigRepository):
+    def __init__(self, account_config_repository: AccountConfigRepository, metaAdsService: MetaAdsService):
         self.__repository = account_config_repository
+        self.__meta_service = metaAdsService
 
     async def get_refresh_time(self, account_id: str):
         account_configs = await self.__repository.get_by_account_id(account_id)
@@ -42,8 +43,7 @@ class RefreshService:
                 print("integração com google ads chamada")
 
             if accountConfig.type == AccountType.facebook_ads:
-                # chamar integracao com facebook
-                print("integração com facebook ads chamada")
+                await self.__meta_service.refresh_data()
 
             if accountConfig.type == AccountType.crm:
                 # chamar integracao com crm
@@ -55,6 +55,6 @@ class RefreshService:
         return
 
     @classmethod
-    async def get_service(cls, account_config_repository: AccountConfigRepository = Depends(
-        AccountConfigRepository.get_service)):
-        return cls(account_config_repository)
+    async def get_service(cls, account_config_repository: AccountConfigRepository = Depends(AccountConfigRepository.get_service), 
+                               metaAdsService: MetaAdsService = Depends(MetaAdsService.get_service)):
+        return cls(account_config_repository, metaAdsService)
