@@ -1,4 +1,3 @@
-import os
 from functools import lru_cache
 
 import httpx
@@ -7,16 +6,19 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = os.getenv("DATABASE_URL") or "postgresql+asyncpg://postgres:postgres@localhost:5432/revforce"
-    OPENAI_KEY: str = os.getenv("OPENAI_KEY") 
+    DATABASE_URL: str
+    OPENAI_KEY: str
 
-# Environment settings
+    class Config:
+        env_file = ".env"
+
+
 @lru_cache()
 def get_settings() -> Settings:
     return Settings()
 
 
-settings: Settings = get_settings()
+settings = get_settings()
 
 
 async def get_http_client():
