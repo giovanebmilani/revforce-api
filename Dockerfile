@@ -20,7 +20,7 @@ COPY pyproject.toml poetry.lock /app/
 RUN poetry install --no-root
 
 # Exporta as dependências para requirements.txt
-RUN poetry export -f requirements.txt --without-hashes -o requirements.txt
+RUN poetry export -f requirements.txt --without-hashes --dev -o requirements.txt
 
 # Etapa 2: Execução
 FROM python:3.11-slim
