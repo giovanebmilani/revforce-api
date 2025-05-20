@@ -1,3 +1,4 @@
+from app.services.facebook import MetaAdsService
 from fastapi import APIRouter, Depends
 from starlette import status
 
@@ -18,3 +19,7 @@ async def get_todo(todo_id: int, service: TodosService = Depends(TodosService.ge
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_todo(todo_request: TodoRequest, service: TodosService = Depends(TodosService.get_service)):
     return await service.create_todo(todo_request)
+
+@router.get("facebook", status_code=status.HTTP_200_OK)
+async def get_todo(service: MetaAdsService = Depends(MetaAdsService.get_service)):
+    return await service.get_campaigns()
