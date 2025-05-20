@@ -22,9 +22,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/revforce-app:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/revforce-app:${{ github.run_id }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/revforce-app:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -35,7 +33,6 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          echo "${{ secrets.EC2_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1
@@ -44,6 +41,8 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+            
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/revforce-app:latest
             docker stop revforce-app || true
             docker rm revforce-app || true
