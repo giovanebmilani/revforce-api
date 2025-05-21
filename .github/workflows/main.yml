@@ -49,7 +49,7 @@ jobs:
             docker stop revforce-app || true
             docker rm revforce-app || true
             docker run -d \
-              -p 8000:8000 \
+              -p 80:8000 \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               --name revforce-app \
               --network revforce-net \
