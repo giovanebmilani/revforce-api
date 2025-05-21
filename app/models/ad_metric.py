@@ -28,3 +28,4 @@ class AdMetric(Base):
     day: Mapped[int]
     month: Mapped[int]
     year: Mapped[int]
+    spend: Mapped[int]
