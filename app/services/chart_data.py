@@ -136,14 +136,18 @@ class DataService:
     async def get_for_chart(self, chart: Chart) -> list[ChartDataPoint]:
         tasks = []
         for source in chart.sources:
-            tasks.append(self.get_for_source(
-                source_id=source.source_id,
-                source_table=source.source_table,
-                period=chart.period,
-                granularity=chart.granularity,
-                metric=chart.metric,
-                segment=chart.segment,
-            ))
+            try:
+                tasks.append(self.get_for_source(
+                    source_id=source.source_id,
+                    source_table=source.source_table,
+                    period=chart.period,
+                    granularity=chart.granularity,
+                    metric=chart.metric,
+                    segment=chart.segment,
+                ))
+            except Exception as e:
+                print(f"Error getting data for source {source.source_id}: {e}")
+                continue
 
         results = await gather(*tasks)
 
