@@ -53,4 +53,5 @@ jobs:
               -p 8000:8000 \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               --name revforce-app \
+              --network revforce-net \
               ${{ secrets.DOCKERHUB_USERNAME }}/revforce-app:latest
