@@ -78,7 +78,10 @@ class ChartService:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"You already have a chart on position {chart_req.position}")
 
         if chart_req.position is None:
-            chart_req.position = max(chart_positions) + 1
+            if not chart_positions: 
+                chart_req.position = 1
+            else: 
+                chart_req.position = max(chart_positions) + 1 
 
         period = await self.__period_repo.create(Period(
             id=str(uuid.uuid4()),
