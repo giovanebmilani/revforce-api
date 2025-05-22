@@ -54,4 +54,4 @@ jobs:
               --name revforce-app \
               --network revforce-net \
               ${{ secrets.DOCKERHUB_USERNAME }}/revforce-app:latest
-            docker exec -it revforce-app alembic upgrade head
+            docker exec -it revforce-app alembic upgrade head || true
