@@ -6,8 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config.application import get_http_client
 from app.config.database import create_tables
-from app.routers import insights, todos, account, account_config, chart, refresh, campaign, ad, chat
-from fastapi.middleware.cors import CORSMiddleware
+from app.routers import insights, account, account_config, chart, refresh, campaign, ad, chat
 
 
 @asynccontextmanager
@@ -41,7 +40,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(todos.router)
 app.include_router(insights.router)
 app.include_router(account.router)
 app.include_router(account_config.router)
