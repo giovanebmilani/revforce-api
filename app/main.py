@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://projeto-plataforma-marketing.s3-website.us-east-2.amazonaws.com"
 ]
 
 app.add_middleware(
