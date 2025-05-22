@@ -5,13 +5,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config.application import get_http_client
-from app.config.database import create_tables
+from app.config.database import engine
 from app.routers import insights, account, account_config, chart, refresh, campaign, ad, chat
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await create_tables()
+    async with engine.begin() as conn:
+        await conn.run_sync(lambda conn: None)
 
     yield  # Server start taking requests
 
