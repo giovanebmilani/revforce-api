@@ -199,7 +199,7 @@ async def populate_db(
                 ctr=random.randint(1, 100),
                 impressions=random.randint(50, 10000),
                 views=random.randint(10, 5000),
-                clicks=random.randint(1, 1000),
+                spend=random.randint(10, 50),
                 device=random.choice(list(DeviceType)),
                 date=curr,
                 hour=curr.hour,
