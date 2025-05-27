@@ -152,6 +152,7 @@ class DataService:
     async def get_for_chart(self, chart: Chart) -> list[ChartDataPoint]:
         tasks = []
         for source in chart.sources:
+
             tasks.append(self.get_for_source(
                 source_id=source.source_id,
                 source_table=source.source_table,
