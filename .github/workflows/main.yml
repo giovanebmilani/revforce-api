@@ -51,6 +51,7 @@ jobs:
             docker run -d \
               -p 80:8000 \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+              -e OPENAI_KEY="${{ secrets.OPENAI_KEY }}" \
               --name revforce-app \
               --network revforce-net \
               ${{ secrets.DOCKERHUB_USERNAME }}/revforce-app:latest
