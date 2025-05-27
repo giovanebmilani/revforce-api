@@ -51,7 +51,6 @@ class ChartRepository:
                     account_id=chart.account_id,
                     position=chart.position,
                     type=chart.type,
-                    metric=chart.metric,
                     period_id=chart.period_id,
                     granularity_id=chart.granularity_id,
                     segment=chart.segment
@@ -81,7 +80,6 @@ class ChartRepository:
                     name=chart.name,
                     type=chart.type,
                     position=chart.position,
-                    metric=chart.metric,
                     period_id=chart.period_id,
                     granularity_id=chart.granularity_id,
                     segment=chart.segment
