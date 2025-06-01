@@ -1,7 +1,7 @@
 from app.schemas.event import EventResponse
 
 class EventService():
-
+# adicionar construtor 
     async def list_event(self, id: str) -> list[EventResponse]:
         events = await self.__repository.list(id)
 
@@ -12,3 +12,6 @@ class EventService():
             event_responses.append(response)
 
         return event_responses
+    
+# get_service
+
