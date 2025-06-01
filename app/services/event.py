@@ -3,6 +3,8 @@ import uuid
 from fastapi import HTTPException, Depends
 from starlette import status
 
+from app.schemas.event import EventResponse
+
 from app.models import Event
 from app.repositories.event import EventRepository
 from app.schemas.event import EventResponse, EventRequest, EventUpdateRequest
@@ -28,7 +30,7 @@ class EventService:
             event_responses.append(response)
 
         return event_responses
-    
+
     async def create_event(self, event_req: EventRequest):
         # this throws 404 if the chart does not exist
         await self.__chart_service.get_chart(event_req.chart_id)
