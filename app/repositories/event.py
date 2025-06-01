@@ -1,11 +1,10 @@
 from uuid import uuid4
 
-from fastapi import Depends
-from sqlalchemy import select, insert, update
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.config.database import get_db
+from sqlalchemy import select, update, insert
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.event import Event
+from fastapi import Depends
 
 class EventRepository:
     def __init__(self, session: AsyncSession):
