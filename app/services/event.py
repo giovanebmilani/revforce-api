@@ -25,8 +25,14 @@ class EventService:
         event_responses = []
 
         for event in events:
-            response = await self._make_event_response(event)
-            event_responses.append(response)
+            event_responses.append(EventResponse(
+                id = event.id,
+                chart_id = event.chart_id,
+                name = event.name,
+                description = event.description,
+                date = event.date,
+                color = event.color 
+            ))
 
         return event_responses
 
