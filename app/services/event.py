@@ -3,11 +3,10 @@ import uuid
 from fastapi import HTTPException, Depends
 from starlette import status
 
-from app.schemas.event import EventResponse
-
 from app.models import Event
-from app.repositories.event import EventRepository
 from app.schemas.event import EventResponse, EventRequest, EventUpdateRequest
+
+from app.repositories.event import EventRepository
 from app.services.charts import ChartService
 
 
