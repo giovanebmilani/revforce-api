@@ -1,7 +1,7 @@
 from app.config.database import get_db
 from sqlalchemy import select 
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.chart import Event
+from app.models.event import Event
 from fastapi import Depends
 
 class EventRepository:
