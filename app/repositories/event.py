@@ -1,6 +1,8 @@
+from app.config.database import get_db
 from sqlalchemy import select 
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.chart import Event
+from fastapi import Depends
 
 class EventRepository:
     def __init__(self, session: AsyncSession):
@@ -13,3 +15,6 @@ class EventRepository:
 
         return list(result.unique().scalars().all())
     
+    @classmethod
+    async def get_service(cls, db: AsyncSession = Depends(get_db)):
+        return cls(db)
