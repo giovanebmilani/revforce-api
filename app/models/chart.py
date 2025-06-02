@@ -34,3 +34,5 @@ class Chart(Base):
     granularity: Mapped["Period"] = relationship("Period", foreign_keys=[granularity_id], single_parent=True, cascade="all, delete-orphan")
     # Relacionamento reverso
     sources: Mapped[list["ChartSource"]] = relationship("ChartSource", cascade="all, delete-orphan")
+    events: Mapped[list["Event"]] = relationship("Event", backref="chart", cascade="all, delete-orphan")
+
