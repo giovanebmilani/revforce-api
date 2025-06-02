@@ -26,7 +26,7 @@ class ChartSource(Base):
     chart_id: Mapped[str] = mapped_column(ForeignKey("charts.id"))
     source_id: Mapped[str]
     source_table: Mapped[SourceTable] = mapped_column(Enum(SourceTable))
-    metrics: Mapped[List[ChartMetric]] = mapped_column(ARRAY(Enum(ChartMetric)))
+    metrics: Mapped[List[ChartMetric]] = mapped_column(ARRAY(Enum(ChartMetric)), nullable=True)
 
     # Relacionamento com Chart
     chart: Mapped["Chart"] = relationship("Chart", back_populates="sources")
