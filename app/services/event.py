@@ -1,6 +1,6 @@
 from app.schemas.event import EventResponse
 from app.repositories.event import EventRepository
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 
 class EventService():
     def __init__(self, repository: EventRepository):
@@ -22,6 +22,11 @@ class EventService():
             ))
 
         return event_responses
+    
+    async def delete_event(self, event_id: str):
+        deleted = await self.__repository.delete(event_id)
+        if deleted is None:
+            raise HTTPException(status_code=404, detail="Event not found.")
     
     @classmethod
     def get_service(cls, event_repository: EventRepository = Depends(EventRepository.get_service)):
