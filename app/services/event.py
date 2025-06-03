@@ -5,7 +5,7 @@ from starlette import status
 
 from app.models.event import Event
 from app.repositories.event import EventRepository
-from app.schemas.event import EventRequest, EventUpdateRequest
+from app.schemas.event import EventRequest, EventUpdateRequest, EventResponse
 from app.services.charts import ChartService
 
 
@@ -49,6 +49,23 @@ class EventService:
         )
 
         return await self.__repository.update(event_id, updated_event)
+
+    async def list_events(self, id: str) -> list[EventResponse]:
+        events = await self.__repository.list(id)
+
+        event_responses = []
+
+        for event in events:
+            event_responses.append(EventResponse(
+                id = event.id,
+                chart_id = event.chart_id,
+                name = event.name,
+                description = event.description,
+                date = event.date,
+                color = event.color
+            ))
+
+        return event_responses
 
     @classmethod
     async def get_service(

@@ -1,12 +1,10 @@
-from sqlalchemy import select
+from app.config.database import get_db
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.models.event import Event
+from fastapi import Depends
+from sqlalchemy import select, insert, update
 from uuid import uuid4
 
-from fastapi import Depends
-from sqlalchemy import insert, update
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.config.database import get_db
-from app.models.event import Event
 
 
 class EventRepository:
@@ -52,6 +50,13 @@ class EventRepository:
         await self.__session.commit()
 
         return result.scalar_one()
+
+    async def list(self, chart_id: str) -> list[Event]:
+        result = await self.__session.execute(
+            select(Event).where(Event.chart_id == chart_id)
+        )
+
+        return list(result.unique().scalars().all())
 
     @classmethod
     async def get_service(cls, db: AsyncSession = Depends(get_db)):

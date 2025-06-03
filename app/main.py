@@ -6,8 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config.application import get_http_client
 from app.config.database import create_tables
-from app.routers import insights, todos, account, account_config, chart, refresh, campaign, ad, chat, event
-from fastapi.middleware.cors import CORSMiddleware
+from app.routers import insights, account, account_config, chart, refresh, campaign, ad, chat, event
 
 
 @asynccontextmanager
@@ -31,6 +30,7 @@ logger = logging.getLogger(__name__)
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://projeto-plataforma-marketing.s3-website.us-east-2.amazonaws.com"
 ]
 
 app.add_middleware(
@@ -41,7 +41,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(todos.router)
 app.include_router(insights.router)
 app.include_router(account.router)
 app.include_router(account_config.router)

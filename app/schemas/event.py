@@ -1,5 +1,5 @@
+
 from datetime import datetime
-from typing import Optional
 from pydantic import BaseModel, Field
 
 class EventRequest(BaseModel):
@@ -15,11 +15,10 @@ class EventUpdateRequest(BaseModel):
     date: datetime
     color: str
 
-
 class EventResponse(BaseModel):
-    event_id: str
+    id: str
     chart_id: str
-    name: str = Field(min_length=3)
+    name: str
     description: str
     date: datetime
     color: str
