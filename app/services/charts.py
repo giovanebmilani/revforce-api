@@ -1,6 +1,5 @@
 from fastapi import Depends, HTTPException
 from starlette import status
-from asyncio import gather
 import uuid
 
 from app.models.chart import Chart
@@ -188,7 +187,6 @@ class ChartService:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"You have charts in the same position")
 
         await self.__repository.bulk_update_positions(charts)
-
         return {"detail": "Positions updated"}
     
     async def get_chart_position_by_account(self, account_id: str):

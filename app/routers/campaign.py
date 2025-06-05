@@ -8,7 +8,6 @@ router = APIRouter(
     tags=["campaigns"]
 )
 
-
 @router.get("/{account_id}/all", status_code=status.HTTP_200_OK)
 async def get_campaigns(account_id: str, repository: CampaignRepository = Depends(CampaignRepository.get_service)):
     return await repository.index(account_id)
