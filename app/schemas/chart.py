@@ -5,7 +5,8 @@ from app.models.chart import ChartMetric, ChartSegment, ChartType
 from app.models.period import PeriodType
 from app.models.chart_source import SourceTable
 from app.models.ad_metric import DeviceType
-import uuid
+
+from app.schemas.event import EventToAnalyze
 
 
 class PeriodSchema(BaseModel):
@@ -86,4 +87,5 @@ class ChartToAnalyze(BaseModel):
     granularity: PeriodResponse
     segment: Optional[ChartSegment]
     data: list[ChartDataPointToAnalyze]
+    events: list[EventToAnalyze]
  

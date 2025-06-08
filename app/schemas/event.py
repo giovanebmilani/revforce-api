@@ -22,3 +22,8 @@ class EventResponse(BaseModel):
     description: str
     date: datetime
     color: str
+
+class EventToAnalyze(BaseModel):
+    name: str
+    description: str
+    date: datetime
