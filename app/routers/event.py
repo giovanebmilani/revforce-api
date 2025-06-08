@@ -1,5 +1,5 @@
 from starlette import status
-from app.schemas.event import EventResponse
+from app.schemas.event import EventRequest, EventResponse, EventUpdateRequest
 from app.services.event import EventService
 from fastapi import APIRouter, Depends
 
@@ -16,3 +16,10 @@ async def list_chart(chart_id: str, service: EventService = Depends(EventService
 async def delete_event(event_id: str, service: EventService = Depends(EventService.get_service)):
     return await service.delete_event(event_id)
 
+@router.post("/", status_code=status.HTTP_201_CREATED)
+async def create_event(event: EventRequest, service: EventService = Depends(EventService.get_service)):
+    return await service.create_event(event)
+
+@router.put("/{event_id}", status_code=status.HTTP_200_OK)
+async def update_event(event_id: str, event: EventUpdateRequest, service: EventService = Depends(EventService.get_service)):
+    return await service.update_event(event_id, event)
