@@ -19,4 +19,3 @@ async def create_event(event: EventRequest, service: EventService = Depends(Even
 @router.put("/{event_id}", status_code=status.HTTP_200_OK)
 async def update_event(event_id: str, event: EventUpdateRequest, service: EventService = Depends(EventService.get_service)):
     return await service.update_event(event_id, event)
-

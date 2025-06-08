@@ -31,7 +31,7 @@ class EventService:
                 name = event.name,
                 description = event.description,
                 date = event.date,
-                color = event.color 
+                color = event.color
             ))
 
         return event_responses

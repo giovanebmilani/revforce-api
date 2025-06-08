@@ -14,19 +14,10 @@ class EventUpdateRequest(BaseModel):
     date: datetime
     color: str
 
-
-class EventResponse(BaseModel):
-    event_id: str
-    chart_id: str
-    name: str = Field(min_length=3)
-    description: str
-    date: datetime
-    color: str
-
 class EventResponse(BaseModel):
     id: str
     chart_id: str
-    name: str 
-    description: str 
+    name: str
+    description: str
     date: datetime
     color: str
