@@ -1,12 +1,12 @@
 import uuid
 
-from fastapi import HTTPException, Depends
 from starlette import status
 
 from app.models import Event
 from app.schemas.event import EventResponse, EventRequest, EventUpdateRequest
-
 from app.repositories.event import EventRepository
+from fastapi import Depends, HTTPException
+
 from app.services.charts import ChartService
 
 
@@ -31,10 +31,15 @@ class EventService:
                 name = event.name,
                 description = event.description,
                 date = event.date,
-                color = event.color
+                color = event.color 
             ))
 
         return event_responses
+
+    async def delete_event(self, event_id: str):
+        deleted = await self.__repository.delete(event_id)
+        if deleted is None:
+            raise HTTPException(status_code=404, detail="Event not found.")
 
     async def create_event(self, event_req: EventRequest):
         # this throws 404 if the chart does not exist
