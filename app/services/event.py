@@ -19,7 +19,7 @@ class EventService:
         self.__repository = event_repository
         self.__chart_service = chart_service
 
-    async def list_event(self, id: str) -> list[EventResponse]:
+    async def list_events(self, id: str) -> list[EventResponse]:
         events = await self.__repository.list(id)
 
         event_responses = []
