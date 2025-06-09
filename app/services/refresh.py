@@ -7,10 +7,13 @@ from app.models.account_config import AccountType
 from app.repositories.account_config import AccountConfigRepository
 from app.schemas.refresh import RefreshRequest, RefreshResponse
 
+from app.services.crm import CrmService
+
 
 class RefreshService:
-    def __init__(self, account_config_repository: AccountConfigRepository):
+    def __init__(self, account_config_repository: AccountConfigRepository, crm_service: CrmService):
         self.__repository = account_config_repository
+        self.__crm_service = crm_service
 
     async def get_refresh_time(self, account_id: str):
         account_configs = await self.__repository.get_by_account_id(account_id)
@@ -47,6 +50,7 @@ class RefreshService:
 
             if accountConfig.type == AccountType.crm:
                 # chamar integracao com crm
+                self.__crm_service.fetch_new_data(accountConfig.id)
                 print("integração com crm chamada")
 
             accountConfig.last_refresh = datetime.now()
@@ -55,6 +59,9 @@ class RefreshService:
         return
 
     @classmethod
-    async def get_service(cls, account_config_repository: AccountConfigRepository = Depends(
-        AccountConfigRepository.get_service)):
-        return cls(account_config_repository)
+    async def get_service(
+        cls, 
+        account_config_repository: AccountConfigRepository = Depends(AccountConfigRepository.get_service),
+        crm_service: CrmService = Depends(CrmService.get_service)
+    ):
+        return cls(account_config_repository, crm_service)

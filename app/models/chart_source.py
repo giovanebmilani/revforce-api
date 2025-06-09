@@ -18,6 +18,9 @@ class ChartMetric(str, enum.Enum):
     click = 'click'
     impression = 'impression'
     spend = 'spend'
+    conversation = 'conversation'
+    deal = 'deal'
+    message = 'message'
 
 class ChartSource(Base):
     __tablename__ = "chart_sources"

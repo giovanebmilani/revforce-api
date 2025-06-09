@@ -8,9 +8,9 @@ class Deal(Base):
     __tablename__ = "deals"
 
     id: Mapped[str] = mapped_column(primary_key=True)
+    integration_id: Mapped[str] = mapped_column(ForeignKey("account_configs.id"))
     remote_id: Mapped[str] = mapped_column(unique=True)
     contact_id: Mapped[str]
-    account_id: Mapped[str] = mapped_column(ForeignKey("accounts.id"))
     title: Mapped[str]
     status: Mapped[str]
     value: Mapped[float]
