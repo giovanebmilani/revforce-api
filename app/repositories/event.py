@@ -40,7 +40,7 @@ class EventRepository:
                 id=str(uuid4()),
                 chart_id=event.chart_id,
                 name=event.name,
-                description=event.name,
+                description=event.description,
                 date=event.date,
                 color=event.color
             ).returning(Event)
