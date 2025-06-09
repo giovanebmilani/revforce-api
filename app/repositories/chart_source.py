@@ -25,6 +25,7 @@ class ChartSourceRepository:
                     chart_id=source.chart_id,
                     source_id=source.source_id,
                     source_table=source.source_table,
+                    metrics=source.metrics,
                 ).returning(ChartSource)
         )
 
@@ -42,6 +43,7 @@ class ChartSourceRepository:
                 chart_id=source.chart_id,
                 source_id=source.source_id,
                 source_table=source.source_table,
+                metrics=source.metrics,
             )
             .returning(ChartSource)
         )

@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Optional, Dict
 from pydantic import BaseModel, Field
-from app.models.chart import ChartMetric, ChartSegment, ChartType
+from app.models.chart import ChartSegment, ChartType
+from app.models.chart_source import ChartMetric
 from app.models.period import PeriodType
 from app.models.chart_source import SourceTable
 from app.models.ad_metric import DeviceType
@@ -17,6 +18,7 @@ class PeriodSchema(BaseModel):
 class SourceSchema(BaseModel):
     source_table: SourceTable
     source_id: str
+    metrics: list[ChartMetric]
 
 
 class ChartRequest(BaseModel):
@@ -24,7 +26,6 @@ class ChartRequest(BaseModel):
     name: str = Field(min_length=3)
     position: Optional[int] = None
     type: ChartType
-    metric: ChartMetric
     period: PeriodSchema
     granularity: PeriodSchema
     sources: list[SourceSchema]
@@ -41,6 +42,7 @@ class SourceResponse(BaseModel):
     chart_id: str
     source_table: SourceTable
     source_id: str
+    metrics: list[ChartMetric]
 
 
 class CompleteChart(BaseModel):
@@ -48,7 +50,6 @@ class CompleteChart(BaseModel):
     name: str = Field(min_length=3)
     position: int
     type: ChartType
-    metric: ChartMetric
     period: PeriodResponse
     granularity: PeriodResponse
     sources: list[SourceResponse]
@@ -60,6 +61,7 @@ class ChartDataPoint(BaseModel):
     source_table: SourceTable
     value: int
     date: datetime
+    metric: ChartMetric
     device: DeviceType | None
 
 

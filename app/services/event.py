@@ -1,11 +1,12 @@
 import uuid
 
-from fastapi import Depends, HTTPException
 from starlette import status
 
-from app.models.event import Event
+from app.models import Event
+from app.schemas.event import EventResponse, EventRequest, EventUpdateRequest
 from app.repositories.event import EventRepository
-from app.schemas.event import EventRequest, EventUpdateRequest, EventResponse
+from fastapi import Depends, HTTPException
+
 from app.services.charts import ChartService
 
 
@@ -17,6 +18,28 @@ class EventService:
     ):
         self.__repository = event_repository
         self.__chart_service = chart_service
+
+    async def list_events(self, id: str) -> list[EventResponse]:
+        events = await self.__repository.list(id)
+
+        event_responses = []
+
+        for event in events:
+            event_responses.append(EventResponse(
+                id = event.id,
+                chart_id = event.chart_id,
+                name = event.name,
+                description = event.description,
+                date = event.date,
+                color = event.color 
+            ))
+
+        return event_responses
+
+    async def delete_event(self, event_id: str):
+        deleted = await self.__repository.delete(event_id)
+        if deleted is None:
+            raise HTTPException(status_code=404, detail="Event not found.")
 
     async def create_event(self, event_req: EventRequest):
         # this throws 404 if the chart does not exist
@@ -49,23 +72,6 @@ class EventService:
         )
 
         return await self.__repository.update(event_id, updated_event)
-
-    async def list_events(self, id: str) -> list[EventResponse]:
-        events = await self.__repository.list(id)
-
-        event_responses = []
-
-        for event in events:
-            event_responses.append(EventResponse(
-                id = event.id,
-                chart_id = event.chart_id,
-                name = event.name,
-                description = event.description,
-                date = event.date,
-                color = event.color
-            ))
-
-        return event_responses
 
     @classmethod
     async def get_service(

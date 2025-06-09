@@ -1,6 +1,5 @@
-
-from datetime import datetime
 from pydantic import BaseModel, Field
+from datetime import datetime
 
 class EventRequest(BaseModel):
     chart_id: str
