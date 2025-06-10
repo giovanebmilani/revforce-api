@@ -14,6 +14,9 @@ from app.models.ad_metric import AdMetric, DeviceType
 from app.models.account_config import AccountConfig, AccountType
 from app.models.account import Account
 from app.models.campaign import Campaign
+from app.models.contact import Contact
+from app.models.deal import Deal
+from app.models.message import Message
 
 
 adjectives = [
@@ -93,6 +96,8 @@ async def populate_db(
         )
         db.add(acc)
         await db.flush()
+    
+    print(f"Using account with id: {acc.id}")
 
     # Fetch or create Facebook Ads config
     meta = await db.scalar(
@@ -127,6 +132,24 @@ async def populate_db(
             last_refresh=datetime.now()
         )
         db.add(google)
+
+    crm = await db.scalar(
+        select(AccountConfig)
+        .where(AccountConfig.account_id == acc.id)
+        .where(AccountConfig.type == AccountType.crm)
+    )
+    
+    if crm is None:
+        crm = AccountConfig(
+            id=str(uuid.uuid4()),
+            account_id=acc.id,
+            type=AccountType.crm,
+            api_secret="invalid secret test only",
+            last_refresh=datetime.now()
+        )
+        db.add(crm)
+
+    await db.commit()
 
     # Clean up existing campaigns and ads
     await db.execute(delete(AdMetric))
@@ -213,6 +236,77 @@ async def populate_db(
     await db.commit()
 
     print(f"Created {metrics_created} metrics for {ads_created} ads between {campaign_count} campaings")
+
+    print("Creating CRM stuff...")
+
+    # Create some contacts
+    contacts_count = random.randint(200, 1500)
+    contacts = []
+    for i in range(contacts_count):
+        contact = Contact(
+            id=str(uuid.uuid4()),
+            integration_id=crm.id,
+            remote_id=f"contact_remote_{i}",
+            email=f"user{i}@example.com",
+            first_name=f"FirstName{i}",
+            last_name=f"LastName{i}",
+            created_at=random_date("2025-01-01", datetime.now()),
+            source=random.choice(["web", "import", "api", "manual"])
+        )
+        db.add(contact)
+        contacts.append(contact)
+
+    await db.commit()
+
+    print(f"Created {contacts_count} contacts")
+
+    # Create some deals
+    deals_count = random.randint(100, 500)
+    statuses = ["open", "won", "lost", "pending"]
+    currencies = ["USD", "EUR", "GBP", "BRL"]
+    for i in range(deals_count):
+        contact = random.choice(contacts)
+        created_at = random_date("2025-01-01", datetime.now())
+        closed_at = created_at + timedelta(days=random.randint(1, 90)) if random.choice([True, False]) else None
+        deal = Deal(
+            id=str(uuid.uuid4()),
+            integration_id=crm.id,
+            remote_id=f"deal_remote_{i}",
+            contact_id=contact.id,
+            title=f"Deal {i} for {contact.first_name}",
+            status=random.choice(statuses),
+            value=round(random.uniform(100, 10000), 2),
+            currency=random.choice(currencies),
+            created_at=created_at,
+            closed_at=closed_at
+        )
+        db.add(deal)
+
+    await db.commit()
+
+    print(f"Created {deals_count} deals")
+
+    # Create some messages
+    messages_count = random.randint(500, 2000)
+    message_types = ["email", "sms", "push", "inapp"]
+    campaigns_list = await db.scalars(select(Campaign))
+    campaigns_list = list(campaigns_list)
+    for i in range(messages_count):
+        campaign = random.choice(campaigns_list)
+        message = Message(
+            id=str(uuid.uuid4()),
+            integration_id=crm.id,
+            remote_id=f"message_remote_{i}",
+            type=random.choice(message_types),
+            campaign_id=campaign.id,
+            message_id=f"msg_{i}_{random.randint(1000,9999)}",
+            timestamp=random_date(campaign.start_date, campaign.end_date)
+        )
+        db.add(message)
+
+    await db.commit()
+
+    print(f"Created {messages_count} messages")
 
 
 async def main():

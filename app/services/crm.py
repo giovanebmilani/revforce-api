@@ -56,9 +56,9 @@ class CrmService:
     @classmethod
     async def get_service(
         cls,
-        account_config_repository: AccountConfigRepository = Depends(AccountConfigRepository.get_repository),
-        deal_repository: DealRepository = Depends(DealRepository.get_repository),
-        contact_repository: ContactRepository = Depends(ContactRepository.get_repository),
-        message_repository: MessageRepository = Depends(MessageRepository.get_repository),
+        account_config_repository: AccountConfigRepository = Depends(AccountConfigRepository.get_service),
+        deal_repository: DealRepository = Depends(DealRepository.get_service),
+        contact_repository: ContactRepository = Depends(ContactRepository.get_service),
+        message_repository: MessageRepository = Depends(MessageRepository.get_service),
     ):
         return cls(account_config_repository, deal_repository, contact_repository, message_repository)

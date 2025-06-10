@@ -16,4 +16,4 @@ class Deal(Base):
     value: Mapped[float]
     currency: Mapped[str]
     created_at: Mapped[datetime]
-    closed_at: Mapped[datetime]
+    closed_at: Mapped[datetime | None]
