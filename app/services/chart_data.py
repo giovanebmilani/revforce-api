@@ -84,12 +84,18 @@ class DataService:
     ) -> list[ChartDataPoint]:
         model = None
 
-        if metric == ChartMetric.contact: model = Contact
-        elif metric == ChartMetric.deal: model = Deal
-        elif metric == ChartMetric.message: model = Message
+        if metric == ChartMetric.contact: 
+            model = Contact
+            model.created_at = Contact.created_at
+        elif metric == ChartMetric.deal: 
+            model = Deal
+            model.created_at = Deal.created_at
+        elif metric == ChartMetric.message: 
+            model = Message
+            model.created_at = Message.timestamp
         else: raise ValueError(f"Unsupported metric for CRM source: {metric}")
 
-        created_at = self.__session.scalar(select(model.created_at).order_by(desc(model.created_at)).limit(1))
+        created_at = await self.__session.scalar(select(model.created_at).order_by(desc(model.created_at)).limit(1))
         if created_at is None:
             return []
         
@@ -101,7 +107,7 @@ class DataService:
         dps = [ChartDataPoint(
             date=d.created_at,
             device=None,
-            source_id=None,
+            source_id="",
             source_table=source_table,
             value=1,  # each message is one data point
             metric=metric,

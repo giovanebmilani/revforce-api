@@ -18,7 +18,7 @@ class ChartMetric(str, enum.Enum):
     click = 'click'
     impression = 'impression'
     spend = 'spend'
-    conversation = 'conversation'
+    contact = 'contact'
     deal = 'deal'
     message = 'message'
 
