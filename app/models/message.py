@@ -10,7 +10,6 @@ class Message(Base):
     id: Mapped[str] = mapped_column(primary_key=True)
     integration_id: Mapped[str] = mapped_column(ForeignKey("account_configs.id"))
     remote_id: Mapped[str] = mapped_column(unique=True)
-    type: Mapped[str]
-    campaign_id: Mapped[str]
-    message_id: Mapped[str]
-    timestamp: Mapped[datetime]
+    subject: Mapped[str]
+    priority: Mapped[int]
+    create_date: Mapped[datetime]

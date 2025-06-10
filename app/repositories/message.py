@@ -28,18 +28,16 @@ class MessageRepository:
         result = await self.__session.execute(
             select(Message).where(Message.remote_id == remote_id)
         )
-        message = result.scalars().first()
+        message = result.scalars().all()
 
         if message:
             return message
 
         message = Message(
             remote_id=remote_id,
-            contact_id=data.get("contact_id"),
-            type=data.get("activity_type"),
-            campaign_id=data.get("campaign_id"),
-            message_id=data.get("message_id"),
-            timestamp=data.get("timestamp")
+            subject=data.get("subject"),
+            priority=data.get("priority"),
+            create_date=data.get("cdate")
         )
 
         self.__session.add(message)
