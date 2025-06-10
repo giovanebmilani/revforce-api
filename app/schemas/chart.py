@@ -83,7 +83,7 @@ class ChartDataPointToAnalyze(BaseModel):
 class ChartToAnalyze(BaseModel):
     name: str
     type: ChartType
-    metric: ChartMetric
+    sources: list[SourceSchema]
     period: PeriodResponse
     granularity: PeriodResponse
     segment: Optional[ChartSegment]
