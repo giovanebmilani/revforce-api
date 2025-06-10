@@ -8,6 +8,18 @@ class MessageRepository:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
+    async def create(self, message: Message) -> Message:
+        self.__session.add(message)
+        await self.__session.commit()
+
+        return message
+    
+    async def create_many(self, messages: list[Message]) -> list[Message]:
+        self.__session.add_all(messages)
+        await self.__session.commit()
+
+        return messages
+
     async def get_or_create(
         self,
         remote_id: str,

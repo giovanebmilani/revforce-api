@@ -10,6 +10,18 @@ class ContactRepository:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
+    async def create(self, contact: Contact) -> Contact:
+        self.__session.add(contact)
+        await self.__session.commit()
+
+        return contact
+
+    async def create_many(self, contacts: list[Contact]) -> list[Contact]:
+        self.__session.add_all(contacts)
+        await self.__session.commit()
+
+        return contacts
+
     async def get_or_create(
         self,
         remote_id: str,

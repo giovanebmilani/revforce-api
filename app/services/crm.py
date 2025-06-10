@@ -2,8 +2,10 @@ from fastapi import Depends, HTTPException
 from starlette import status
 import uuid
 
-from app.services.activecampaign_service import get_deals
+from app.services.activecampaign_service import get_deals, get_contacts, get_messages
 from app.models.deal import Deal
+from app.models.message import Message
+from app.models.contact import Contact
 from app.repositories.account_config import AccountConfigRepository
 from app.repositories.deal import DealRepository
 from app.repositories.contact import ContactRepository
@@ -36,9 +38,9 @@ class CrmService:
         # TODO: use the config.api_secret
         deals = await get_deals()
 
-        for deal in deals:
             # TODO: test this beacause I don't have the integration configured
-            await self.__deal_repository.create(Deal(
+        await self.__deal_repository.create_many([
+            Deal(
                 integration_id=config_id,
                 remote_id=deal.get("id", str(uuid.uuid4())),
                 contact_id=deal.get("contact_id"),
@@ -48,7 +50,29 @@ class CrmService:
                 currency=deal.get("currency", "USD"),
                 created_at=deal.get("created_at"),
                 closed_at=deal.get("closed_at", None),
-            ))
+            ) for deal in deals])
+
+        messages = await get_messages()
+
+        await self.__message_repository.create_many([
+            Message(
+                integration_id=config_id,
+                remote_id=message.get("id", str(uuid.uuid4())),
+                contact_id=message.get("contact_id"),
+                content=message.get("content", ""),
+                created_at=message.get("created_at"),
+            ) for message in messages])
+        
+        contacts = await get_contacts()
+
+        await self.__contact_repository.create_many([
+            Contact(
+                remote_id=contact.get("id", str(uuid.uuid4())),
+                email=contact.get("email", ""),
+                first_name=contact.get("first_name", ""),
+                created_at=contact.get("created_at"),
+                source=config.integration_type
+            ) for contact in contacts])
 
         pass
 

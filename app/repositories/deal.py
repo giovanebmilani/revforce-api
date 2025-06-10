@@ -8,6 +8,18 @@ class DealRepository:
     def __init__(self, session: AsyncSession):
         self.__session = session
 
+    async def create(self, deal: Deal) -> Deal:
+        self.__session.add(deal)
+        await self.__session.commit()
+
+        return deal
+    
+    async def create_many(self, deals: list[Deal]) -> list[Deal]:
+        self.__session.add_all(deals)
+        await self.__session.commit()
+
+        return deals
+
     async def get_or_create(
         self,
         remote_id: str,
