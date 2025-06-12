@@ -8,6 +8,10 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     DATABASE_URL: str
     OPENAI_KEY: str
+    ACCESS_TOKEN: str
+    AD_ACCOUNT_ID: str
+    APP_ID: int
+    APP_SECRET: str
 
     class Config:
         env_file = ".env"
