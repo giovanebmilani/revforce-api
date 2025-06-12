@@ -8,4 +8,6 @@ class AccountConfigRequest(BaseModel):
     account_id: str
     type: AccountType
     api_secret: str
+    api_id: str
+    access_token: str
 
