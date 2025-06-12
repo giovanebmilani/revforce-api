@@ -42,7 +42,7 @@ def get_campaign_links(campaign_id: str) -> List[Dict[str, Any]]:
 
 def get_contacts() -> List[Dict[str, Any]]:
     try:
-        res = requests.get(f"{API_URL}/api/3/contacts", headers=headers)
+        res = requests.get(f"{API_URL}/api/3/contacts?limit=100", headers=headers)
         res.raise_for_status()
         return res.json().get("contacts", [])
     except Exception as e:
@@ -51,7 +51,7 @@ def get_contacts() -> List[Dict[str, Any]]:
 
 def get_deals() -> List[Dict[str, Any]]:
     try:
-        res = requests.get(f"{API_URL}/api/3/deals", headers=headers)
+        res = requests.get(f"{API_URL}/api/3/deals?limit=100", headers=headers)
         res.raise_for_status()
         return res.json().get("deals", [])
     except Exception as e:
@@ -65,4 +65,13 @@ def get_contact_activities() -> List[Dict[str, Any]]:
         return res.json().get("activity", [])
     except Exception as e:
         print(f"Erro ao buscar atividades: {e}")
+        return []
+
+def get_messages() -> List[Dict[str, Any]]:
+    try:
+        res = requests.get(f"{API_URL}/api/3/messages?limit=100", headers=headers)
+        res.raise_for_status()
+        return res.json().get("messages", [])
+    except Exception as e:
+        print(f"Erro ao buscar mensagens: {e}")
         return []

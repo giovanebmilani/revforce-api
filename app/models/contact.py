@@ -11,6 +11,6 @@ class Contact(Base):
     remote_id: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str]
     first_name: Mapped[str]
-    last_name: Mapped[str]
+    last_name: Mapped[str | None]
     created_at: Mapped[datetime]
     source: Mapped[str]

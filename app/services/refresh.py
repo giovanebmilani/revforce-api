@@ -38,6 +38,7 @@ class RefreshService:
         for accountConfig in account_configs:
             if accountConfig.last_refresh is not None and accountConfig.last_refresh + timedelta(
                     hours=3) > datetime.now():
+                print(f"Config {accountConfig.id} já foi atualizada recentemente, pulando...")
                 continue
 
             if accountConfig.type == AccountType.google_ads:
@@ -50,7 +51,7 @@ class RefreshService:
 
             if accountConfig.type == AccountType.crm:
                 # chamar integracao com crm
-                self.__crm_service.fetch_new_data(accountConfig.id)
+                await self.__crm_service.fetch_new_data(accountConfig.id)
                 print("integração com crm chamada")
 
             accountConfig.last_refresh = datetime.now()

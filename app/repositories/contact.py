@@ -1,4 +1,5 @@
 from fastapi import Depends
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from datetime import datetime
@@ -11,14 +12,24 @@ class ContactRepository:
         self.__session = session
 
     async def create(self, contact: Contact) -> Contact:
-        self.__session.add(contact)
+        insert_stmt = insert(Contact).values(
+            id=contact.id,
+            integration_id=contact.integration_id,
+            remote_id=contact.remote_id,
+            email=contact.email,
+            first_name=contact.first_name,
+            created_at=contact.created_at,
+            source=contact.source
+        ).on_conflict_do_nothing(index_elements=['remote_id'])
+
+        await self.__session.execute(insert_stmt)
         await self.__session.commit()
 
         return contact
 
     async def create_many(self, contacts: list[Contact]) -> list[Contact]:
-        self.__session.add_all(contacts)
-        await self.__session.commit()
+        for contact in contacts:
+            await self.create(contact)
 
         return contacts
 

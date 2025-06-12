@@ -155,6 +155,9 @@ async def populate_db(
     await db.execute(delete(AdMetric))
     await db.execute(delete(Ad))
     await db.execute(delete(Campaign))
+    await db.execute(delete(Contact))
+    await db.execute(delete(Deal))
+    await db.execute(delete(Message))
 
 
     # Insert campaigns
@@ -288,19 +291,14 @@ async def populate_db(
 
     # Create some messages
     messages_count = random.randint(500, 2000)
-    message_types = ["email", "sms", "push", "inapp"]
-    campaigns_list = await db.scalars(select(Campaign))
-    campaigns_list = list(campaigns_list)
     for i in range(messages_count):
-        campaign = random.choice(campaigns_list)
         message = Message(
             id=str(uuid.uuid4()),
-            integration_id=crm.id,
+            integration_id=campaign.integration_id,
             remote_id=f"message_remote_{i}",
-            type=random.choice(message_types),
-            campaign_id=campaign.id,
-            message_id=f"msg_{i}_{random.randint(1000,9999)}",
-            timestamp=random_date(campaign.start_date, campaign.end_date)
+            subject=f"Subject {i} for {campaign.name}",
+            priority=random.randint(1, 5),
+            create_date=random_date(campaign.start_date, campaign.end_date),
         )
         db.add(message)
 

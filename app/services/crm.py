@@ -1,6 +1,7 @@
 from fastapi import Depends, HTTPException
 from starlette import status
 import uuid
+from datetime import datetime
 
 from app.services.activecampaign_service import get_deals, get_contacts, get_messages
 from app.models.deal import Deal
@@ -27,6 +28,7 @@ class CrmService:
 
 
     async def fetch_new_data(self, config_id: str):
+        print("fetchando new data")
         config = await self.__account_config_repository.get(config_id)
 
         if config is None:
@@ -36,42 +38,47 @@ class CrmService:
             )
 
         # TODO: use the config.api_secret
-        deals = await get_deals()
+        deals = get_deals()
 
-            # TODO: test this beacause I don't have the integration configured
         await self.__deal_repository.create_many([
             Deal(
+                id=str(uuid.uuid4()),
                 integration_id=config_id,
                 remote_id=deal.get("id", str(uuid.uuid4())),
-                contact_id=deal.get("contact_id"),
+                contact_id=deal.get("contact"),
                 title=deal.get("title", ""),
                 status=deal.get("status", ""),
-                value=deal.get("value", 0.0),
+                value=int(deal.get("value", 0.0)),
                 currency=deal.get("currency", "USD"),
-                created_at=deal.get("created_at"),
-                closed_at=deal.get("closed_at", None),
+                created_at=datetime.fromisoformat(deal.get("cdate")).replace(tzinfo=None) if deal.get("cdate") else None,
+                closed_at=datetime.fromisoformat(deal.get("edate")).replace(tzinfo=None) if deal.get("edate") else None,
             ) for deal in deals])
 
-        messages = await get_messages()
+        messages = get_messages()
+        print(f"messages: {len(messages)}")
 
         await self.__message_repository.create_many([
-            Message(
-                integration_id=config_id,
-                remote_id=message.get("id", str(uuid.uuid4())),
-                contact_id=message.get("contact_id"),
-                content=message.get("content", ""),
-                created_at=message.get("created_at"),
-            ) for message in messages])
+           Message(
+               id=str(uuid.uuid4()),
+               integration_id=config_id,
+               remote_id=message.get("id", str(uuid.uuid4())),
+               subject=message.get("subject", ""),
+               priority=int(message.get("priority", 0)),
+               create_date=datetime.fromisoformat(message.get("cdate")).replace(tzinfo=None) if message.get("cdate") else None
+           ) for message in messages])
         
-        contacts = await get_contacts()
+        contacts = get_contacts()
 
         await self.__contact_repository.create_many([
             Contact(
+                id=str(uuid.uuid4()),
+                integration_id=config_id,
                 remote_id=contact.get("id", str(uuid.uuid4())),
                 email=contact.get("email", ""),
-                first_name=contact.get("first_name", ""),
-                created_at=contact.get("created_at"),
-                source=config.integration_type
+                first_name=contact.get("firstName", ""),
+                last_name=contact.get("lastName", ""),
+                created_at=datetime.fromisoformat(contact.get("cdate")).replace(tzinfo=None) if contact.get("cdate") else None,
+                source=contact.get("source", "unknown")
             ) for contact in contacts])
 
         pass

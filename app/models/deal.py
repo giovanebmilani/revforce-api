@@ -10,7 +10,7 @@ class Deal(Base):
     id: Mapped[str] = mapped_column(primary_key=True)
     integration_id: Mapped[str] = mapped_column(ForeignKey("account_configs.id"))
     remote_id: Mapped[str] = mapped_column(unique=True)
-    contact_id: Mapped[str]
+    contact_id: Mapped[str | None]
     title: Mapped[str]
     status: Mapped[str]
     value: Mapped[float]

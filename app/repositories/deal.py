@@ -1,4 +1,5 @@
 from fastapi import Depends
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.config.database import get_db
@@ -9,15 +10,28 @@ class DealRepository:
         self.__session = session
 
     async def create(self, deal: Deal) -> Deal:
-        self.__session.add(deal)
+        insert_stmt = insert(Deal).values(
+            id=deal.id,
+            remote_id=deal.remote_id,
+            contact_id=deal.contact_id,
+            integration_id=deal.integration_id,
+            title=deal.title,
+            status=deal.status,
+            value=deal.value,
+            currency=deal.currency,
+            created_at=deal.created_at,
+            closed_at=deal.closed_at
+        ).on_conflict_do_nothing(index_elements=['remote_id'])
+
+        await self.__session.execute(insert_stmt)
         await self.__session.commit()
 
         return deal
     
     async def create_many(self, deals: list[Deal]) -> list[Deal]:
-        self.__session.add_all(deals)
-        await self.__session.commit()
-
+        for deal in deals:
+            await self.create(deal)
+        
         return deals
 
     async def get_or_create(

@@ -1,3 +1,5 @@
+import uuid
+from sqlalchemy.dialects.postgresql import insert
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -9,14 +11,24 @@ class MessageRepository:
         self.__session = session
 
     async def create(self, message: Message) -> Message:
-        self.__session.add(message)
+        insert_stmt = insert(Message).values(
+            id=message.id,
+            integration_id=message.integration_id,
+            remote_id=message.remote_id,
+            subject=message.subject,
+            priority=message.priority,
+            create_date=message.create_date
+        ).on_conflict_do_nothing(index_elements=['remote_id'])
+
+        await self.__session.execute(insert_stmt)
+        
         await self.__session.commit()
 
         return message
     
     async def create_many(self, messages: list[Message]) -> list[Message]:
-        self.__session.add_all(messages)
-        await self.__session.commit()
+        for message in messages:
+            await self.create(message)
 
         return messages
 
@@ -34,6 +46,7 @@ class MessageRepository:
             return message
 
         message = Message(
+            id=str(uuid.uuid4()),
             remote_id=remote_id,
             subject=data.get("subject"),
             priority=data.get("priority"),
