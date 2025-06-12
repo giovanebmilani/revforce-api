@@ -52,6 +52,11 @@ jobs:
               -p 80:8000 \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -e OPENAI_KEY="${{ secrets.OPENAI_KEY }}" \
+              -e ASSISTANT_ID="${{ secrets.ASSISTANT_ID }}" \
+              -e ACCESS_TOKEN="${{ secrets.ACCESS_TOKEN }}" \
+              -e APP_SECRET="${{ secrets.APP_SECRET }}" \
+              -e AD_ACCOUNT_ID="${{ secrets.AD_ACCOUNT_ID }}" \
+              -e APP_ID="${{ secrets.APP_ID }}" \
               --name revforce-app \
               --network revforce-net \
               ${{ secrets.DOCKERHUB_USERNAME }}/revforce-app:latest
