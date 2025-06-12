@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     AD_ACCOUNT_ID: str
     APP_ID: int
     APP_SECRET: str
+    ASSISTANT_ID: str
 
     class Config:
         env_file = ".env"
