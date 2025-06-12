@@ -10,6 +10,9 @@ from app.config.database import get_db
 
 from app.schemas.chart import ChartDataPoint, PeriodSchema
 
+from app.models.contact import Contact
+from app.models.deal import Deal
+from app.models.message import Message
 from app.models.chart import ChartSegment, Chart
 from app.models.ad import Ad
 from app.models.ad_metric import AdMetric, DeviceType
@@ -68,6 +71,52 @@ def aggregate_data_points(dps: list[ChartDataPoint]) -> list[ChartDataPoint]:
 class DataService:
     def __init__(self, session: AsyncSession):
         self.__session = session
+
+    async def get_for_crm_source_and_metric(
+        self, 
+        *,
+        source_table: SourceTable, 
+        # source_id: str, 
+        period: PeriodSchema,
+        granularity: PeriodSchema,
+        metric: ChartMetric,
+        **_
+    ) -> list[ChartDataPoint]:
+        model = None
+
+        if metric == ChartMetric.contact: 
+            model = Contact
+            model.created_at = Contact.created_at
+        elif metric == ChartMetric.deal: 
+            model = Deal
+            model.created_at = Deal.created_at
+        elif metric == ChartMetric.message: 
+            model = Message
+            model.created_at = Message.timestamp
+        else: raise ValueError(f"Unsupported metric for CRM source: {metric}")
+
+        created_at = await self.__session.scalar(select(model.created_at).order_by(desc(model.created_at)).limit(1))
+        if created_at is None:
+            return []
+        
+        start_time = created_at - timedelta_from_period(period)
+        raw_data = await self.__session.execute(
+            select(model).where(model.created_at > start_time)
+        )
+
+        dps = [ChartDataPoint(
+            date=d.created_at,
+            device=None,
+            source_id="",
+            source_table=source_table,
+            value=1,  # each message is one data point
+            metric=metric,
+        ) for d in raw_data.scalars().all()]
+
+        grouped = group_by_date(dps, granularity)
+
+        return aggregate_data_points(grouped)
+
 
     async def get_for_source_and_metric(
         self, 
@@ -143,8 +192,13 @@ class DataService:
 
     async def get_for_source(self, **kwargs) -> list[ChartDataPoint]:
         data: list[ChartDataPoint] = []
-        for metric in kwargs['metrics']:
-            data.extend(await self.get_for_source_and_metric(**kwargs, metric=metric))
+
+        if kwargs.get('source_table') == SourceTable.crm:
+            for metric in kwargs['metrics']:
+                data.extend(await self.get_for_crm_source_and_metric(**kwargs, metric=metric))
+        else:
+            for metric in kwargs['metrics']:
+                data.extend(await self.get_for_source_and_metric(**kwargs, metric=metric))
 
         return data
 

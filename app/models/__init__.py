@@ -9,3 +9,7 @@ from .chart import Chart, ChartType
 from .chart_source import ChartSource, ChartMetric, SourceTable
 from .event import Event
 from .period import Period
+
+from .message import Message
+from .deal import Deal
+from .contact import Contact
