@@ -100,4 +100,3 @@ async def test_update_config_not_found(service, mock_repository):
 async def test_delete_config(service, mock_repository):
     await service.delete_config("cfg-1")
     mock_repository.delete.assert_awaited_once_with("cfg-1")
-

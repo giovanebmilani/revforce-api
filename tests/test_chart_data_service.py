@@ -15,48 +15,40 @@ from sqlalchemy.engine import Result
 
 @pytest.mark.asyncio
 async def test_get_for_source_and_metric_ad_with_clicks():
-    # Setup
     mock_session = AsyncMock(spec=AsyncSession)
 
-    # Data to be returned from DB
     now = datetime.now(timezone.utc)
     sample_metric = MagicMock()
     sample_metric.date = now
     sample_metric.device = DeviceType.mobile
     mock_value = 42
-
-    # Mocking result of scalar call
     mock_session.scalar.return_value = now
-
-    # Mocking result of execute call
     mock_result = MagicMock(spec=Result)
     mock_result.all.return_value = [(sample_metric, mock_value)]
     mock_session.execute.return_value = mock_result
 
     service = DataService(mock_session)
 
-    # Act
     result = await service.get_for_source_and_metric(
         source_table=SourceTable.ad,
         source_id="ad123",
         period=PeriodSchema(type=PeriodType.day, amount=7),
         granularity=PeriodSchema(type=PeriodType.day, amount=1),
         metric=ChartMetric.click,
-        segment=None  # substituído ChartSegment.none por None
+        segment=None 
     )
 
-    # Assert
     assert len(result) == 1
     dp = result[0]
     assert dp.source_id == "ad123"
     assert dp.metric == ChartMetric.click
     assert dp.value == 42
-    assert dp.device is None  # segment != device => group_by_device
+    assert dp.device is None  
 
 @pytest.mark.asyncio
 async def test_get_for_source_and_metric_campaign_no_data():
     mock_session = AsyncMock(spec=AsyncSession)
-    mock_session.scalar.return_value = None  # No start_time found
+    mock_session.scalar.return_value = None 
 
     service = DataService(mock_session)
 
@@ -76,10 +68,8 @@ async def test_get_for_source_multiple_metrics():
     mock_session = AsyncMock(spec=AsyncSession)
     now = datetime.now(timezone.utc)
 
-    # Simula que existem dados
     mock_session.scalar.return_value = now
 
-    # Simula resultado para dois diferentes tipos de métrica
     result_data = MagicMock()
     result_data.date = now
     result_data.device = DeviceType.desktop
@@ -97,7 +87,7 @@ async def test_get_for_source_multiple_metrics():
         period=PeriodSchema(type=PeriodType.hour, amount=2),
         granularity=PeriodSchema(type=PeriodType.hour, amount=1),
         metrics=[ChartMetric.click, ChartMetric.spend],
-        segment=None,  # substituído ChartSegment.none por None
+        segment=None, 
     )
 
     assert len(result) == 2
@@ -130,7 +120,7 @@ async def test_get_for_chart_runs_all_sources():
     chart.sources = [DummySource(), DummySource()]
     chart.period = PeriodSchema(type=PeriodType.day, amount=1)
     chart.granularity = PeriodSchema(type=PeriodType.day, amount=1)
-    chart.segment = None  # substituído ChartSegment.none por None
+    chart.segment = None  
 
     result = await service.get_for_chart(chart)
     assert len(result) == 2
