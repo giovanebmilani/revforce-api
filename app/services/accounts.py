@@ -43,4 +43,3 @@ class AccountService:
     @classmethod
     async def get_service(cls, account_repository: AccountRepository = Depends(AccountRepository.get_service)):
         return cls(account_repository)
-
