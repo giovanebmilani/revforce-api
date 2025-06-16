@@ -6,7 +6,8 @@ import uuid
 from app.models.chart import Chart
 from app.models.period import Period
 from app.models.chart_source import ChartSource
-from app.schemas.chart import ChartRequest, ChartResponse, UpdateChartOrderRequest
+from app.schemas.chart import ChartRequest, ChartResponse, UpdateChartOrderRequest, CompleteChart, PeriodResponse, \
+    SourceResponse
 
 from app.repositories.chart import ChartRepository
 from app.repositories.period import PeriodRepository
@@ -32,16 +33,19 @@ class ChartService:
 
     async def _make_chart_response(self, chart: Chart) -> ChartResponse:
         data = await self.__data_service.get_for_chart(chart)
-        
-        return ChartResponse(
-            chart={
-                **chart.__dict__,
-                "period": chart.period.__dict__,
-                "granularity": chart.granularity.__dict__,
-                "sources":  [s.__dict__ for s in chart.sources]
-            },
-            data=data,
+
+        complete_chart = CompleteChart(
+            id=chart.id,
+            name=chart.name,
+            position=chart.position,
+            type=chart.type,
+            period=PeriodResponse(**chart.period.__dict__),
+            granularity=PeriodResponse(**chart.granularity.__dict__),
+            sources=[SourceResponse(**source.__dict__) for source in chart.sources],
+            segment=chart.segment
         )
+
+        return ChartResponse(chart=complete_chart, data=data)
 
 
     async def get_chart(self, chart_id: str) -> ChartResponse:
