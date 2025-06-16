@@ -1,8 +1,9 @@
 import requests, os
 from typing import Any, Dict, List, Optional
+from app.config.application import settings
 
-API_URL = os.getenv("ACTIVE_CAMPAIGN_API_URL")
-API_KEY = os.getenv("ACTIVE_CAMPAIGN_API_KEY")
+API_URL = settings.APP_ID
+API_KEY = settings.APP_SECRET
 
 headers = {
     "Api-Token": API_KEY,
