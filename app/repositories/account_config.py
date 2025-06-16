@@ -26,6 +26,13 @@ class AccountConfigRepository:
 
         return result.scalar_one_or_none()
 
+    async def get_by_type(self, type: str) -> AccountConfig | None:
+        result = await self.__session.execute(
+            select(AccountConfig).where(AccountConfig.type == type)
+        )
+
+        return result.scalar_one_or_none()
+
     async def get_by_account_id(self, account_id: str) -> list[AccountConfig]:
         result = await self.__session.execute(
             select(AccountConfig).where(AccountConfig.account_id == account_id)
