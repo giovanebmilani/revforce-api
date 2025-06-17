@@ -6,11 +6,14 @@ from starlette import status
 from app.models.account_config import AccountType
 from app.repositories.account_config import AccountConfigRepository
 from app.schemas.refresh import RefreshRequest, RefreshResponse
+
+from app.services.crm import CrmService
 from app.services.facebook import MetaAdsService
 
 class RefreshService:
-    def __init__(self, account_config_repository: AccountConfigRepository, metaAdsService: MetaAdsService):
+    def __init__(self, account_config_repository: AccountConfigRepository, crm_service: CrmService, metaAdsService: MetaAdsService):
         self.__repository = account_config_repository
+        self.__crm_service = crm_service
         self.__meta_service = metaAdsService
 
     async def get_refresh_time(self, account_id: str):
@@ -36,6 +39,7 @@ class RefreshService:
         for accountConfig in account_configs:
             if accountConfig.last_refresh is not None and accountConfig.last_refresh + timedelta(
                     hours=3) > datetime.now():
+                print(f"Config {accountConfig.id} já foi atualizada recentemente, pulando...")
                 continue
 
             if accountConfig.type == AccountType.google_ads:
@@ -47,6 +51,7 @@ class RefreshService:
 
             if accountConfig.type == AccountType.crm:
                 # chamar integracao com crm
+                await self.__crm_service.fetch_new_data(accountConfig.id)
                 print("integração com crm chamada")
 
             accountConfig.last_refresh = datetime.now()
@@ -55,6 +60,10 @@ class RefreshService:
         return
 
     @classmethod
-    async def get_service(cls, account_config_repository: AccountConfigRepository = Depends(AccountConfigRepository.get_service), 
-                               metaAdsService: MetaAdsService = Depends(MetaAdsService.get_service)):
-        return cls(account_config_repository, metaAdsService)
+    async def get_service(
+        cls, 
+        account_config_repository: AccountConfigRepository = Depends(AccountConfigRepository.get_service),
+        crm_service: CrmService = Depends(CrmService.get_service),
+        metaAdsService: MetaAdsService = Depends(MetaAdsService.get_service)
+    ):
+        return cls(account_config_repository, crm_service, metaAdsService)

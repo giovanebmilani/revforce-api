@@ -129,7 +129,7 @@ class ChatService:
             chart_to_analyze = ChartToAnalyze(
                 name=chart_data.chart.name,
                 type=chart_data.chart.type,
-                metric=chart_data.chart.metric,
+                sources=chart_data.chart.sources,
                 period=chart_data.chart.period,
                 granularity=chart_data.chart.granularity,
                 segment=chart_data.chart.segment,

@@ -24,6 +24,32 @@ class AdRepository:
         )
 
         return result.scalars().all()
+    
+    async def get_or_create(
+        self,
+        remote_id: str,
+        integration_id: str,
+        campaign_id: int,
+        name: str
+    ) -> Ad:
+        result = await self.__session.execute(
+            select(Ad).where(Ad.remote_id == remote_id)
+        )
+        ad = result.scalars().first()
+
+        if ad:
+            return ad
+
+        ad = Ad(
+            remote_id=remote_id,
+            integration_id=integration_id,
+            campaign_id=campaign_id,
+            name=name
+        )
+        self.__session.add(ad)
+        await self.__session.commit()
+        await self.__session.refresh(ad)
+        return ad
 
     async def create_or_update(self, data: Ad) -> Ad:
             try:
