@@ -3,7 +3,7 @@ from sqlalchemy import ForeignKey, Enum
 import enum
 
 from app.config.database import Base
-from . import Event
+from .event import Event
 
 from .period import Period
 from .chart_source import ChartSource
