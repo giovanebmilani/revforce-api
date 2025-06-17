@@ -66,7 +66,7 @@ class ChatService:
                 role=Role.system,
                 content="Você é um assistente especializado em análise de dados de marketing digital. "
                         "O usuário verá um gráfico interativo ao lado deste chat, e poderá fazer perguntas sobre esse gráfico. "
-                        "Sempre responda com base nos dados em json fornecidos a seguir: \n" + chart_to_analyze.json()
+                        "Sempre responda com base nos dados em json fornecidos a seguir: \n" + chart_to_analyze.model_dump_json()
 
             )
 
@@ -98,18 +98,31 @@ class ChatService:
 
         chart_data = await self.__chart_service.get_chart(chat_data.chart_id)
 
+        event_data = await self.__event_service.list_events(chart_data.chart.id)
+
         history = chat_data.history
 
         if not history:
-            data_to_analyze = []
+            data_to_analyze_assistant = []
 
             for data in chart_data.data:
-                data_to_analyze.append(
+                data_to_analyze_assistant.append(
                     ChartDataPointToAnalyze(
                         source_table=data.source_table,
                         value=data.value,
                         date=data.date,
                         device=data.device
+                    )
+                )
+
+            events_to_analyze = []
+
+            for event in event_data:
+                events_to_analyze.append(
+                    EventToAnalyze(
+                        name=event.name,
+                        description=event.description,
+                        date=event.date
                     )
                 )
 
@@ -120,14 +133,15 @@ class ChatService:
                 period=chart_data.chart.period,
                 granularity=chart_data.chart.granularity,
                 segment=chart_data.chart.segment,
-                data=data_to_analyze
+                data=data_to_analyze_assistant,
+                events=events_to_analyze
             )
 
             system_instructions = History(
                 role=Role.system,
                 content="Você é um assistente especializado em análise de dados de marketing digital. "
                         "O usuário verá um gráfico interativo ao lado deste chat, e poderá fazer perguntas sobre esse gráfico. "
-                        "Sempre responda com base nos dados fornecidos a seguir: \n" + chart_to_analyze.json()
+                        "Sempre responda com base nos dados fornecidos a seguir: \n" + chart_to_analyze.model_dump_json()
 
             )
 
