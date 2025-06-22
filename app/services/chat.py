@@ -53,14 +53,13 @@ class ChatService:
             chart_to_analyze = ChartToAnalyze(
                 name=chart_data.chart.name,
                 type=chart_data.chart.type,
-                metric=chart_data.chart.metric,
                 period=chart_data.chart.period,
+                sources=chart_data.chart.sources,
                 granularity=chart_data.chart.granularity,
                 segment=chart_data.chart.segment,
                 data=data_to_analyze,
                 events=events_to_analyze
             )
-
 
             system_instructions = History(
                 role=Role.system,

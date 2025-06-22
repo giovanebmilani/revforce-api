@@ -1,28 +1,28 @@
-from fastapi import Depends, HTTPException
-from starlette import status
 import uuid
 
-from app.models.chart import Chart
-from app.models.period import Period
-from app.models.chart_source import ChartSource
-from app.schemas.chart import ChartRequest, ChartResponse, UpdateChartOrderRequest, CompleteChart, PeriodResponse, \
-    SourceResponse
+from fastapi import Depends, HTTPException
+from starlette import status
 
+from app.models.chart import Chart
+from app.models.chart_source import ChartSource
+from app.models.period import Period
 from app.repositories.chart import ChartRepository
-from app.repositories.period import PeriodRepository
 from app.repositories.chart_source import ChartSourceRepository
+from app.repositories.period import PeriodRepository
+from app.schemas.chart import ChartRequest, ChartResponse, UpdateChartOrderRequest, CompleteChart, PeriodResponse, \
+    SourceSchema
 from app.services.accounts import AccountService
 from app.services.chart_data import DataService
 
 
 class ChartService:
     def __init__(
-        self,
-        chart_repository: ChartRepository,
-        period_repository: PeriodRepository,
-        chart_source_repository: ChartSourceRepository,
-        account_service: AccountService,
-        data_service: DataService,
+            self,
+            chart_repository: ChartRepository,
+            period_repository: PeriodRepository,
+            chart_source_repository: ChartSourceRepository,
+            account_service: AccountService,
+            data_service: DataService,
     ):
         self.__repository = chart_repository
         self.__period_repo = period_repository
@@ -40,21 +40,20 @@ class ChartService:
             type=chart.type,
             period=PeriodResponse(**chart.period.__dict__),
             granularity=PeriodResponse(**chart.granularity.__dict__),
-            sources=[SourceResponse(**source.__dict__) for source in chart.sources],
+            sources=[SourceSchema(**source.__dict__) for source in chart.sources],
             segment=chart.segment
         )
 
         return ChartResponse(chart=complete_chart, data=data)
 
-
     async def get_chart(self, chart_id: str) -> ChartResponse:
         chart = await self.__repository.get(chart_id)
 
-        if chart is None: 
+        if chart is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chart not found.")
 
         return await self._make_chart_response(chart)
-    
+
     async def list_charts(self, account_id: str) -> list[ChartResponse]:
         charts = await self.__repository.list(account_id)
 
@@ -65,7 +64,7 @@ class ChartService:
             chart_responses.append(response)
 
         return chart_responses
-    
+
     async def create_chart(self, chart_req: ChartRequest):
         # this throws 404 if the account does not exist
         await self.__account_serivce.get_account(chart_req.account_id)
@@ -74,17 +73,18 @@ class ChartService:
 
         if chart_same_name is not None:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Chart with name already exists")
-        
+
         chart_positions = [c.position for c in await self.__repository.list(chart_req.account_id)]
 
         if chart_req.position is not None and chart_req.position in chart_positions:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"You already have a chart on position {chart_req.position}")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                                detail=f"You already have a chart on position {chart_req.position}")
 
         if chart_req.position is None:
-            if not chart_positions: 
+            if not chart_positions:
                 chart_req.position = 1
-            else: 
-                chart_req.position = max(chart_positions) + 1 
+            else:
+                chart_req.position = max(chart_positions) + 1
 
         period = await self.__period_repo.create(Period(
             id=str(uuid.uuid4()),
@@ -97,7 +97,7 @@ class ChartService:
             type=chart_req.granularity.type,
             amount=chart_req.granularity.amount,
         ))
-        
+
         chart = await self.__repository.create(Chart(
             id=str(uuid.uuid4()),
             account_id=chart_req.account_id,
@@ -133,16 +133,16 @@ class ChartService:
         if chart_same_name is not None and chart_same_name.id != chart_id:
             print(chart_same_name.id)
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Chart with name already exists")
-        
+
         # very important to remove the chart we're updating here
         chart_positions = [c.position for c in await self.__repository.list(chart_req.account_id) if c.id != chart_id]
 
         if chart_req.position is not None and chart_req.position in chart_positions:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"You already have a chart on position {chart_req.position}")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                                detail=f"You already have a chart on position {chart_req.position}")
 
         if chart_req.position is None:
             chart_req.position = max(chart_positions) + 1
-
 
         period = await self.__period_repo.update(chart_to_update.period_id, Period(
             type=chart_req.period.type,
@@ -156,7 +156,7 @@ class ChartService:
 
         updated_chart = Chart(
             id=chart_to_update.id,
-            account_id=chart_to_update.account_id, # don't change the account id
+            account_id=chart_to_update.account_id,  # don't change the account id
             name=chart_req.name,
             position=chart_req.position,
             type=chart_req.type,
@@ -192,17 +192,17 @@ class ChartService:
 
         await self.__repository.bulk_update_positions(charts)
         return {"detail": "Positions updated"}
-    
+
     async def get_chart_position_by_account(self, account_id: str):
         return await self.__repository.get_chart_position_by_account(account_id)
 
     @classmethod
     async def get_service(
-        cls,
-        chart_repository: ChartRepository = Depends(ChartRepository.get_service),
-        period_repository: PeriodRepository = Depends(PeriodRepository.get_service),
-        chart_source_repository: ChartSourceRepository = Depends(ChartSourceRepository.get_service),
-        account_service: AccountService = Depends(AccountService.get_service),
-        data_service: DataService = Depends(DataService.get_service)
+            cls,
+            chart_repository: ChartRepository = Depends(ChartRepository.get_service),
+            period_repository: PeriodRepository = Depends(PeriodRepository.get_service),
+            chart_source_repository: ChartSourceRepository = Depends(ChartSourceRepository.get_service),
+            account_service: AccountService = Depends(AccountService.get_service),
+            data_service: DataService = Depends(DataService.get_service)
     ):
         return cls(chart_repository, period_repository, chart_source_repository, account_service, data_service)
