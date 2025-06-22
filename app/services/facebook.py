@@ -90,7 +90,9 @@ class MetaAdsService:
             'date_stop'
         ]
         params = {
-            'breakdowns': ['device_platform']
+            'breakdowns': ['device_platform'],
+            'date_preset': 'last_year',
+            'time_increment': 1
         }
         insights = ad_obj.get_insights(fields=fields, params=params)
 
