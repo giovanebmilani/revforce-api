@@ -1,12 +1,13 @@
 from datetime import datetime
 from typing import Optional, Dict
+
 from pydantic import BaseModel, Field
+
+from app.models.ad_metric import DeviceType
 from app.models.chart import ChartSegment, ChartType
 from app.models.chart_source import ChartMetric
-from app.models.period import PeriodType
 from app.models.chart_source import SourceTable
-from app.models.ad_metric import DeviceType
-
+from app.models.period import PeriodType
 from app.schemas.event import EventToAnalyze
 
 
@@ -52,7 +53,7 @@ class CompleteChart(BaseModel):
     type: ChartType
     period: PeriodResponse
     granularity: PeriodResponse
-    sources: list[SourceResponse]
+    sources: list[SourceSchema]
     segment: Optional[ChartSegment]
 
 
@@ -90,4 +91,3 @@ class ChartToAnalyze(BaseModel):
     segment: Optional[ChartSegment]
     data: list[ChartDataPointToAnalyze]
     events: list[EventToAnalyze]
- 

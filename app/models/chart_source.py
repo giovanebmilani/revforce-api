@@ -1,17 +1,20 @@
-from typing import TYPE_CHECKING, List 
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey, Enum, ARRAY
 import enum
+from typing import TYPE_CHECKING, List
+
+from sqlalchemy import ForeignKey, Enum, ARRAY
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
     from .chart import Chart
 
 from app.config.database import Base
 
+
 class SourceTable(str, enum.Enum):
     campaign = 'campaign'
     ad = 'ad'
     crm = 'crm'
+
 
 class ChartMetric(str, enum.Enum):
     ctr = 'ctr'
@@ -21,6 +24,7 @@ class ChartMetric(str, enum.Enum):
     contact = 'contact'
     deal = 'deal'
     message = 'message'
+
 
 class ChartSource(Base):
     __tablename__ = "chart_sources"
