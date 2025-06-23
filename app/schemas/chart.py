@@ -19,7 +19,6 @@ class PeriodSchema(BaseModel):
 class SourceSchema(BaseModel):
     source_table: SourceTable
     source_id: str
-    source_type: SourceTable
     metrics: list[ChartMetric]
 
 
@@ -61,7 +60,7 @@ class CompleteChart(BaseModel):
 class ChartDataPoint(BaseModel):
     source_id: str
     source_table: SourceTable
-    value: float
+    value: int
     date: datetime
     metric: ChartMetric
     device: DeviceType | None
