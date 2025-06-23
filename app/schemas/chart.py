@@ -19,7 +19,6 @@ class PeriodSchema(BaseModel):
 class SourceSchema(BaseModel):
     source_table: SourceTable
     source_id: str
-    source_type: SourceTable
     metrics: list[ChartMetric]
 
 
